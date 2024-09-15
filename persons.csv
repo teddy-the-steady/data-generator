@@ -1,0 +1,5 @@
+table_name,column,type,length,condition1
+persons,id,int,,
+persons,name,varchar(50),50,hankaku
+persons,age,int,,
+persons,gender,chat(1),1,m/f
