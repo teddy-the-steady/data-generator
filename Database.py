@@ -15,14 +15,17 @@ class Database():
         self.conn = pyodbc.connect(connectionString)
         self.cursor = self.conn.cursor()
 
+
     def __del__(self):
         self.conn.close()
         self.cursor.close()
+
 
     def fetch_all(self,query,args={}):
         self.cursor.execute(query,args)
         rows = self.cursor.fetchall()
         return rows
+
 
     def commit(self):
         self.conn.commit()
