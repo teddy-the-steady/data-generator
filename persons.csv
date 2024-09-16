@@ -1,4 +1,4 @@
-table_name,column,type,length,condition1
+table_name,column,type,length,format
 persons,id,int,,
 persons,name,varchar(50),50,hankaku
 persons,age,int,,

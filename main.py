@@ -1,14 +1,12 @@
-from DataGenerator import DataGenerator
-import csv
+from Csv import Csv
 
 
 def openCsv():
-    dg = DataGenerator('persons.csv')
-    reader = dg.get_csv_reader()
+    csv = Csv('persons.csv')
+    title = csv.get_title()
+    tables = csv.get_tables()
     
-    for line in reader:
-        print(line)
+    print(title)
+    print(tables)
     
-    dg.close()
-
 openCsv()
