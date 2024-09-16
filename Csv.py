@@ -9,10 +9,10 @@ class Csv():
 
     def get_header(self):
         with open(self.csv_path, 'r') as file:
-            for index, line in enumerate(csv.reader(file)):
+            for index, header in enumerate(csv.reader(file)):
                 if index == 0:
-                    self._check_header(line)
-                    return line
+                    self._check_header(header)
+                    return header
 
 
     def get_tables(self):
