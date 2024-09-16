@@ -2,4 +2,4 @@ table_name,column,type,length,format
 persons,id,int,,
 persons,name,varchar(50),50,hankaku
 persons,age,int,,
-persons,gender,chat(1),1,m/f
+persons,gender,char(1),1,m/f
