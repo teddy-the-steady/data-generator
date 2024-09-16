@@ -3,6 +3,8 @@ import csv
 class Csv():
     def __init__(self, csv_path):
         self.csv_path = csv_path
+        self.header = self.get_header()
+        self.tables = self.get_tables()
 
 
     def get_header(self):
@@ -10,10 +12,7 @@ class Csv():
             for index, line in enumerate(csv.reader(file)):
                 if index == 0:
                     self._check_header(line)
-                    self.header = line
-                break
-
-        return self.header
+                    return line
 
 
     def get_tables(self):
@@ -40,9 +39,8 @@ class Csv():
                 if index == 0:
                     self._check_header(line)
                     table_name_index = line.index('table_name')
-                else:
-                    if line[table_name_index] == table_name:
-                        columns.append(line)
+                elif line[table_name_index] == table_name:
+                    columns.append(line)
 
         return columns
 
