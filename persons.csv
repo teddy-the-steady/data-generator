@@ -1,5 +1,6 @@
-table_name,column,type,length,format
-persons,id,int,,
-persons,name,varchar(50),50,hankaku
-persons,age,int,,
-persons,gender,char(1),1,m/f
+table_name,column,type,constraint,length,format
+persons,id,int,pk,,
+persons,name,varchar(50),,gte50,hankaku
+persons,age,int,,,
+persons,gender,char(1),,1,m/f
+persons,my_number,char(12),unique,12,
