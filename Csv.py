@@ -5,7 +5,7 @@ class Csv():
         self.csv_path = csv_path
 
 
-    def get_title(self):
+    def get_header(self):
         with open(self.csv_path, 'r') as file:
             for index, line in enumerate(csv.reader(file)):
                 if index == 0:
@@ -45,6 +45,7 @@ class Csv():
                         columns.append(line)
 
         return columns
+
 
     def _check_header(self, header_candidate):
         if not set(['table_name', 'column', 'type']).issubset(header_candidate):
