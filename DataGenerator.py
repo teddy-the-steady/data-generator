@@ -3,35 +3,38 @@ class DataGenerator():
         self.csv = csv
 
 
-    def make_insert_queries_for_table(self, table_name):
+    def make_insert_queries_for_table(self, table_name, count):
         if not table_name in self.csv.tables:
             raise Exception('Table name not found')
 
-        print(self.csv.header)
-        print(self.csv.tables)
         columns = self.csv.get_columns(table_name)
         # TODO
         # 1. make table a dict
-        # {
-        #   table_name: 'persons',
-        #   columns: [
-        #       {column: 'id', type: 'int', constraint: 'pk', length: '', format: ''},
-        #       {column: 'name', type: 'varchar(50)', constraint: '', length: 'gte50', format: 'hankaku'},
-        #       {column: 'age', type: 'int', constraint: '', length: '', format: 'positive_number'},
-        #       {column: 'gender', type: 'char(1)', constraint: '', length: '1', format: 'm/f'},
-        #       {column: 'my_number', type: 'char(12)', constraint: 'unique', length: '12', format: 'positive_number'},
-        #   ]
-        # }
-        for column in columns:
-            self._column_to_dict(column)
-            print('///////////')
+        columns_dict = self._columns_to_dict(columns)
         # 2. make sets of each column
+        for column_dict in columns_dict['columns']:
+            self._make_list_for_each_column(column_dict, count)
         #   a. check constraint (unique=true, pk=true)
         #   b. check format (options, hankaku, email? and more)
-        #   c. decide between making a set and using random function
-        #   d. make column item (consider length + type)
-        # 3. combine sets of column to make rows
+        #   c. consider length + type
+        #   d. use random function (+ set)
+        # 3. combine list(set) of columns to make rows
 
 
-    def _column_to_dict(self, column):
-        print(column[self.csv.header.index('column')])
+    def _columns_to_dict(self, columns):
+        dicted_columns = []
+        for column in columns:
+            dicted_column = dict()
+            for header_item in self.csv.header:
+                if not header_item == 'table_name':
+                    dicted_column[header_item] = column[self.csv.header.index(header_item)]
+            dicted_columns.append(dicted_column)
+
+        return {
+            'table_name': columns[0][self.csv.header.index('table_name')],
+            'columns': dicted_columns
+        }
+    
+
+    def _make_list_for_each_column(self, column, count):
+        print(column)
