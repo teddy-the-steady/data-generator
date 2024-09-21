@@ -1,6 +1,7 @@
 import random
 from datetime import timedelta, datetime
 from gimei import Gimei
+import mojimoji
 
 class DataGenerator():
     def __init__(self, csv):
@@ -17,7 +18,7 @@ class DataGenerator():
         columns_dict = self._columns_to_dict(columns)
         # 2. make sets of each column
         for column_dict in columns_dict['columns']:
-            print(self._get_random_datetime_between('2024-01-01', '2025-01-01'))
+            print(self._get_random_number_code(2))
         #   a. check format (options, code, hankaku, email? and more)
         #   b. consider length + type
         #   c. check constraint (unique=true, pk=true)
@@ -54,13 +55,17 @@ class DataGenerator():
         return datetime.fromisoformat(start) + timedelta(seconds = random_second)
 
 
-    def _get_random_name(self):
+    def _get_random_name(self, han=False):
         name = Gimei().name
+        if han:
+            return mojimoji.zen_to_han(name.kanji)
         return name.kanji
     
 
-    def _get_random_name_kana(self):
+    def _get_random_name_kana(self, han=False):
         name = Gimei().name
+        if han:
+            return mojimoji.zen_to_han(name.katakana)
         return name.katakana
 
 
@@ -74,6 +79,5 @@ class DataGenerator():
         return address.katakana
     
 
-    def _get_random_code(self, length, type):
-        if type == 'number':
-            return 1234
+    def _get_random_number_code(self, length):
+        return random.randrange(10 ** (length - 1), 10 ** (length))
