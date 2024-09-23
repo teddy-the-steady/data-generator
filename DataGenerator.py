@@ -5,6 +5,8 @@ from gimei import Gimei
 import mojimoji
 
 class DataGenerator():
+    column = {}
+
     def __init__(self, csv):
         self.csv = csv
 
@@ -19,7 +21,9 @@ class DataGenerator():
         columns_dict = self._columns_to_dict(columns)
         # 2. make sets of each column
         for column_dict in columns_dict['columns']:
-            self._generate_column_items()
+            self.column = column_dict
+            result = self._generate_column_items(10)
+            print(result)
         #   a. check format (options, code, hankaku, email? and more)
         #   b. consider length + type
         #   c. check constraint (unique=true, pk=true)
@@ -42,8 +46,38 @@ class DataGenerator():
         }
 
 
-    def _generate_column_items(self):
-        print('gen!!')
+    def _generate_column_items(self, count):
+        result = list()
+        if self._has_optional_choice():
+            for i in range(1, count):
+                options = self.column['format'].split('/')
+                result.append(self._get_random_choice(options))
+            return result
+
+        if self._is_name():
+            if self._is_human_name():
+                kanji = list()
+                kana = list()
+                for i in range(1, count):
+                    name = self._get_random_name()
+                    kanji.append(name.kanji)
+                    kana.append(name.katakana)
+                result.append(kanji)
+                result.append(kana)
+                return result
+
+
+    def _has_optional_choice(self):
+        return '/' in self.column['format']
+
+
+    def _is_name(self):
+        return 'name' in self.column['column'].lower()
+
+
+    def _is_human_name(self):
+        human_name_columns = ['customername', 'customernamekana']
+        return self.column['column'].lower() in human_name_columns
 
 
     def _get_random_choice(self, options_list):
