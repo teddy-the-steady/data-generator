@@ -6,6 +6,7 @@ import mojimoji
 
 class DataGenerator():
     column = {}
+    possible_pair_columns = {}
 
     def __init__(self, csv):
         self.csv = csv
@@ -20,6 +21,7 @@ class DataGenerator():
         # 1. make table a dict
         columns_dict = self._columns_to_dict(columns)
         # 2. make sets of each column
+        print(columns_dict)
         for column_dict in columns_dict['columns']:
             self.column = column_dict
             result = self._generate_column_items(10)
@@ -55,16 +57,23 @@ class DataGenerator():
             return result
 
         if self._is_name():
-            if self._is_human_name():
+            column_name_lower = self.column['column'].lower()
+
+            if self._is_human_name(column_name_lower):
+                if self._has_already_made_up_name_pairs(column_name_lower):
+                    return self.possible_pair_columns[column_name_lower]
+
                 kanji = list()
                 kana = list()
                 for i in range(1, count):
                     name = self._get_random_name()
                     kanji.append(name.kanji)
-                    kana.append(name.katakana)
-                result.append(kanji)
-                result.append(kana)
-                return result
+                    name_kana = name.katakana
+                    if self._is_hankaku_kana:
+                        name_kana = self._zen_to_han(name_kana)
+                    kana.append(name_kana)
+
+                return self._set_possible_pair_columns_and_return(column_name_lower, kanji, kana)
 
 
     def _has_optional_choice(self):
@@ -75,9 +84,31 @@ class DataGenerator():
         return 'name' in self.column['column'].lower()
 
 
-    def _is_human_name(self):
+    def _is_human_name(self, column_name_lower):
         human_name_columns = ['customername', 'customernamekana']
-        return self.column['column'].lower() in human_name_columns
+        return column_name_lower in human_name_columns
+
+
+    def _has_already_made_up_name_pairs(self, column_name_lower):
+        print(column_name_lower)
+        return column_name_lower in self.possible_pair_columns.keys()
+
+
+    def _set_possible_pair_columns_and_return(self, column_name_lower, kanji, kana):
+        if 'kana' in column_name_lower:
+            self.possible_pair_columns[column_name_lower.replace('kana', '')] = kanji
+            self.possible_pair_columns[column_name_lower] = kana
+
+            return self.possible_pair_columns[column_name_lower]
+        else:
+            self.possible_pair_columns[column_name_lower] = kanji
+            self.possible_pair_columns[column_name_lower + 'kana'] = kana
+
+            return self.possible_pair_columns[column_name_lower]
+
+
+    def _is_hankaku_kana(self):
+        return 'hankaku_kana' in self.column['format']
 
 
     def _get_random_choice(self, options_list):
