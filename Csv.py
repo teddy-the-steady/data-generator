@@ -46,5 +46,12 @@ class Csv():
 
 
     def _check_header(self, header_candidate):
-        if not set(['table_name', 'column', 'type']).issubset(header_candidate):
+        if not set([
+            'table_name',
+            'column',
+            'type',
+            'constraint',
+            'length',
+            'format'
+        ]).issubset(header_candidate):
             raise Exception('No proper header found in csv file')
