@@ -18,7 +18,7 @@ class DataGenerator():
         columns_dict = self._columns_to_dict(columns)
         # 2. make sets of each column
         for column_dict in columns_dict['columns']:
-            print(self._get_random_number_code(2))
+            name = self._get_random_name()
         #   a. check format (options, code, hankaku, email? and more)
         #   b. consider length + type
         #   c. check constraint (unique=true, pk=true)
@@ -55,29 +55,17 @@ class DataGenerator():
         return datetime.fromisoformat(start) + timedelta(seconds = random_second)
 
 
-    def _get_random_name(self, han=False):
-        name = Gimei().name
-        if han:
-            return mojimoji.zen_to_han(name.kanji)
-        return name.kanji
-    
+    def _get_random_name(self):
+        return Gimei().name
 
-    def _get_random_name_kana(self, han=False):
-        name = Gimei().name
-        if han:
-            return mojimoji.zen_to_han(name.katakana)
-        return name.katakana
+
+    def _zen_to_han(self, str):
+        return mojimoji.zen_to_han(str)
 
 
     def _get_random_address(self):
-        address = Gimei().address
-        return address.kanji
+        return Gimei().address
 
-
-    def _get_random_address_kana(self):
-        address = Gimei().address
-        return address.katakana
-    
 
     def _get_random_number_code(self, length):
         return random.randrange(10 ** (length - 1), 10 ** (length))
