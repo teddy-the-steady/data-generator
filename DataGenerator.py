@@ -3,6 +3,8 @@ import string
 from datetime import timedelta, datetime
 from gimei import Gimei
 import mojimoji
+from Database import Database
+
 
 class DataGenerator():
     column = {}
@@ -51,8 +53,8 @@ class DataGenerator():
     def _generate_column_items(self, count):
         result = list()
         if self._has_optional_choice():
+            options = self._select_options(self.column['format'])
             for i in range(1, count):
-                options = self.column['format'].split('/')
                 result.append(self._get_random_choice(options))
             return result
 
@@ -77,7 +79,7 @@ class DataGenerator():
 
 
     def _has_optional_choice(self):
-        return '/' in self.column['format']
+        return 'C00' in self.column['format']
 
 
     def _is_name(self):
@@ -167,3 +169,16 @@ class DataGenerator():
         for i in range(1, length + 1):
             result += chr(random.randrange(0x4e00, 0x9fa1))
         return result
+
+
+    def _select_options(self, division_code):
+        db = Database()
+        result = db.fetch_all(f'''
+            select ITEM_CODE from MST_CODE
+            where DIVISION_CODE = '{division_code}'
+        ''')
+
+        def from_tuple_list_to_list(original_list):
+            return [item[0] for item in original_list]
+
+        return from_tuple_list_to_list(result)
