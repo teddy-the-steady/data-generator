@@ -7,10 +7,12 @@ class Database():
         SERVER = 'localhost'
         DATABASE = 'trustsol'
 
-        connectionString = f'DRIVER={DRIVER};
+        connectionString = f'''
+                            DRIVER={DRIVER};
                             SERVER={SERVER};
                             DATABASE={DATABASE};
-                            Trusted_connection=yes'
+                            Trusted_connection=yes;
+                            '''
         
         self.conn = pyodbc.connect(connectionString)
         self.cursor = self.conn.cursor()
@@ -18,11 +20,10 @@ class Database():
 
     def __del__(self):
         self.conn.close()
-        self.cursor.close()
 
 
-    def fetch_all(self,query,args={}):
-        self.cursor.execute(query,args)
+    def fetch_all(self,query):
+        self.cursor.execute(query)
         rows = self.cursor.fetchall()
         return rows
 
