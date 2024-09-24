@@ -1,3 +1,4 @@
 gimei==0.2.3
+mojimoji==0.0.13
 pyodbc==5.1.0
 PyYAML==6.0.2
