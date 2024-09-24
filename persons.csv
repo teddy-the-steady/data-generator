@@ -1,7 +1,0 @@
-table_name,column,type,constraint,length,format
-persons,id,int,pk,,
-persons,CustomerName,varchar(50),,lte50,
-persons,CustomerNameKana,varchar(50),,lte50,hankaku
-persons,age,int,,,uint
-persons,gender,char(1),,1,m/f
-persons,my_number,char(12),unique,12,number

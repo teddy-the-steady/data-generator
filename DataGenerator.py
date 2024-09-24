@@ -85,12 +85,11 @@ class DataGenerator():
 
 
     def _is_human_name(self, column_name_lower):
-        human_name_columns = ['customername', 'customernamekana']
+        human_name_columns = ['customer_name', 'customer_name_kana']
         return column_name_lower in human_name_columns
 
 
     def _has_already_made_up_name_pairs(self, column_name_lower):
-        print(column_name_lower)
         return column_name_lower in self.possible_pair_columns.keys()
 
 
@@ -149,13 +148,22 @@ class DataGenerator():
        return ''.join(random.choice(string.ascii_letters) for x in range(length))
 
 
-    def _get_random_hiragana(self):
-        return chr(random.randrange(0x3040, 0x30a0))
+    def _get_random_hiragana(self, length):
+        result = ''
+        for i in range(1, length + 1):
+            result += chr(random.randrange(0x3041, 0x309B))
+        return result
 
 
-    def _get_random_katakana(self):
-        return chr(random.randrange(0x30a0, 0x3100))
+    def _get_random_katakana(self, length):
+        result = ''
+        for i in range(1, length + 1):
+            result += chr(random.randrange(0x30a1, 0x30F7))
+        return result
 
 
-    def _get_random_kanji(self):
-        return chr(random.randrange(0x4e00, 0x4f00))
+    def _get_random_kanji(self, length):
+        result = ''
+        for i in range(1, length + 1):
+            result += chr(random.randrange(0x4e00, 0x9fa1))
+        return result
