@@ -51,15 +51,16 @@ class DataGenerator():
 
 
     def _generate_column_items(self, count):
-        result = list()
+        result = set()
         column_name_lower = self.column['column'].lower()
 
         if self._has_optional_choice(self.column['format']):
             db = Database()
             options = db._select_options(self.column['format'])
+            options_result = list()
             for i in range(0, count):
-                result.append(self._get_random_choice(options))
-            return result
+                options_result.append(self._get_random_choice(options))
+            return options_result
 
         if self._is_name(column_name_lower):
             if self._is_human_name(column_name_lower):
@@ -96,9 +97,11 @@ class DataGenerator():
 
         if self._is_date_or_datetime():
             if 'datetime' in self.column['type'].lower():
-                for i in range(0, count):
-                    result.append(self._get_random_datetime_between('2024-01-01', '2024-05-10'))
-                return result
+                while True:
+                    result.add(self._get_random_datetime_between('2024-01-01', '2024-05-10'))
+                    if len(result) == count:
+                        break
+                return list(result)
             if 'date' in self.column['type'].lower():
                 if self._is_date_pair(column_name_lower):
                     if self._has_already_made_up_pairs(column_name_lower):
@@ -110,14 +113,18 @@ class DataGenerator():
                         if len(start_date) == count:
                             break
 
-                    end_date = list()
-                    for i in range(0, count):
-                        end_date.append(self._get_random_datetime_between('2024-01-01', '2024-05-10', is_date_only=True))
+                    end_date = set()
+                    while True:
+                        end_date.add(self._get_random_datetime_between('2024-01-01', '2024-05-10', is_date_only=True))
+                        if len(end_date) == count:
+                            break
 
-                    return self._set_possible_pair_dates_and_return(column_name_lower, list(start_date), end_date)
+                    return self._set_possible_pair_dates_and_return(column_name_lower, list(start_date), list(end_date))
 
-                for i in range(0, count):
-                    result.append(self._get_random_datetime_between('2024-01-10', '2024-05-10', is_date_only=True))
+                while True:
+                    result.add(self._get_random_datetime_between('2024-01-10', '2024-05-10', is_date_only=True))
+                    if len(result) == count:
+                        break
                 return result
 
 
