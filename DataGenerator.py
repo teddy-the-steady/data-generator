@@ -54,14 +54,14 @@ class DataGenerator():
         result = list()
         column_name_lower = self.column['column'].lower()
 
-        if self._has_optional_choice():
+        if self._has_optional_choice(self.column['format']):
             db = Database()
             options = db._select_options(self.column['format'])
             for i in range(0, count):
                 result.append(self._get_random_choice(options))
             return result
 
-        if self._is_name():
+        if self._is_name(column_name_lower):
             if self._is_human_name(column_name_lower):
                 if self._has_already_made_up_pairs(column_name_lower):
                     return self.possible_pair_columns[column_name_lower]
@@ -72,13 +72,13 @@ class DataGenerator():
                     name = self._get_random_name()
                     kanji.append(name.kanji)
                     name_kana = name.katakana
-                    if self._is_hankaku_kana:
+                    if self._is_hankaku_kana(self.column['format']):
                         name_kana = self._zen_to_han(name_kana)
                     kana.append(name_kana)
 
                 return self._set_possible_pair_names_and_return(column_name_lower, kanji, kana)
 
-        if self._is_address():
+        if self._is_address(column_name_lower):
             if self._has_already_made_up_pairs(column_name_lower):
                 return self.possible_pair_columns[column_name_lower]
 
@@ -88,30 +88,57 @@ class DataGenerator():
                 address = self._get_random_address()
                 kanji.append(address.kanji)
                 address_kana = address.katakana
-                if self._is_hankaku_kana:
+                if self._is_hankaku_kana(self.column['format']):
                     name_kana = self._zen_to_han(address_kana)
                 kana.append(address_kana)
 
             return self._set_possible_pair_names_and_return(column_name_lower, kanji, kana)
 
-        if self._is_datetime():
-            print(self.column['column'])
+        if self._is_date_or_datetime():
+            if 'datetime' in self.column['type'].lower():
+                for i in range(0, count):
+                    result.append(self._get_random_datetime_between('2024-01-01', '2024-05-10'))
+                return result
+            if 'date' in self.column['type'].lower():
+                if self._is_date_pair(column_name_lower):
+                    if self._has_already_made_up_pairs(column_name_lower):
+                        return self.possible_pair_columns[column_name_lower]
+
+                    start_date = set()
+                    while True:
+                        start_date.add(self._get_random_datetime_between('2018-01-01', '2023-12-31', is_date_only=True))
+                        if len(start_date) == count:
+                            break
+
+                    end_date = list()
+                    for i in range(0, count):
+                        end_date.append(self._get_random_datetime_between('2024-01-01', '2024-05-10', is_date_only=True))
+
+                    return self._set_possible_pair_dates_and_return(column_name_lower, list(start_date), end_date)
+
+                for i in range(0, count):
+                    result.append(self._get_random_datetime_between('2024-01-10', '2024-05-10', is_date_only=True))
+                return result
 
 
-    def _has_optional_choice(self):
-        return 'C00' in self.column['format']
+    def _has_optional_choice(self, column_format):
+        return 'C00' in column_format
 
 
-    def _is_name(self):
-        return 'name' in self.column['column'].lower()
+    def _is_name(self, column_name_lower):
+        return 'name' in column_name_lower
 
 
-    def _is_address(self):
-        return 'address' in self.column['column'].lower()
+    def _is_address(self, column_name_lower):
+        return 'address' in column_name_lower
 
 
-    def _is_datetime(self):
+    def _is_date_or_datetime(self):
         return self.column['type'].lower() in ['date', 'datetime']
+
+
+    def _is_date_pair(self, column_name_lower):
+        return any(x in column_name_lower for x in ['start', 'end'])
 
 
     def _is_human_name(self, column_name_lower):
@@ -136,22 +163,39 @@ class DataGenerator():
             return self.possible_pair_columns[column_name_lower]
 
 
-    def _is_hankaku_kana(self):
-        return 'hankaku_kana' in self.column['format']
+    def _set_possible_pair_dates_and_return(self, column_name_lower, start_date, end_date):
+        if 'start' in column_name_lower:
+            self.possible_pair_columns[column_name_lower] = start_date
+            self.possible_pair_columns[column_name_lower.replace('start', 'end')] = end_date
+
+            return self.possible_pair_columns[column_name_lower]
+        elif 'end' in column_name_lower:
+            self.possible_pair_columns[column_name_lower] = end_date
+            self.possible_pair_columns[column_name_lower.replace('end', 'start')] = start_date
+
+            return self.possible_pair_columns[column_name_lower]
+
+
+    def _is_hankaku_kana(self, column_format):
+        return 'hankaku_kana' in column_format
 
 
     def _get_random_choice(self, options_list):
         return random.choice(options_list)
 
 
-    def _get_random_datetime_between(self, start, end):
+    def _get_random_datetime_between(self, start, end, is_date_only=False):
         try:
             delta = datetime.fromisoformat(end) - datetime.fromisoformat(start)
         except ValueError:
             raise ValueError("Incorrect data format, should be YYYY-MM-DD")
         int_delta = (delta.days * 24 * 60 * 60) + delta.seconds
         random_second = random.randrange(int_delta)
-        return datetime.fromisoformat(start) + timedelta(seconds = random_second)
+
+        result = datetime.fromisoformat(start) + timedelta(seconds = random_second)
+        if is_date_only:
+            return str(result).split()[0]
+        return result.__str__()
 
 
     def _get_random_name(self):
