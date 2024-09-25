@@ -26,7 +26,7 @@ class DataGenerator():
         print(columns_dict)
         for column_dict in columns_dict['columns']:
             self.column = column_dict
-            result = self._generate_column_items(10)
+            result = self._generate_column_items(count)
             print(result)
         #   a. check format (options, code, hankaku, email? and more)
         #   b. consider length + type
@@ -52,23 +52,23 @@ class DataGenerator():
 
     def _generate_column_items(self, count):
         result = list()
+        column_name_lower = self.column['column'].lower()
+
         if self._has_optional_choice():
             db = Database()
             options = db._select_options(self.column['format'])
-            for i in range(1, count):
+            for i in range(0, count):
                 result.append(self._get_random_choice(options))
             return result
 
         if self._is_name():
-            column_name_lower = self.column['column'].lower()
-
             if self._is_human_name(column_name_lower):
-                if self._has_already_made_up_name_pairs(column_name_lower):
+                if self._has_already_made_up_pairs(column_name_lower):
                     return self.possible_pair_columns[column_name_lower]
 
                 kanji = list()
                 kana = list()
-                for i in range(1, count):
+                for i in range(0, count):
                     name = self._get_random_name()
                     kanji.append(name.kanji)
                     name_kana = name.katakana
@@ -76,7 +76,26 @@ class DataGenerator():
                         name_kana = self._zen_to_han(name_kana)
                     kana.append(name_kana)
 
-                return self._set_possible_pair_columns_and_return(column_name_lower, kanji, kana)
+                return self._set_possible_pair_names_and_return(column_name_lower, kanji, kana)
+
+        if self._is_address():
+            if self._has_already_made_up_pairs(column_name_lower):
+                return self.possible_pair_columns[column_name_lower]
+
+            kanji = list()
+            kana = list()
+            for i in range(0, count):
+                address = self._get_random_address()
+                kanji.append(address.kanji)
+                address_kana = address.katakana
+                if self._is_hankaku_kana:
+                    name_kana = self._zen_to_han(address_kana)
+                kana.append(address_kana)
+
+            return self._set_possible_pair_names_and_return(column_name_lower, kanji, kana)
+
+        if self._is_datetime():
+            print(self.column['column'])
 
 
     def _has_optional_choice(self):
@@ -87,16 +106,24 @@ class DataGenerator():
         return 'name' in self.column['column'].lower()
 
 
+    def _is_address(self):
+        return 'address' in self.column['column'].lower()
+
+
+    def _is_datetime(self):
+        return self.column['type'].lower() in ['date', 'datetime']
+
+
     def _is_human_name(self, column_name_lower):
         human_name_columns = ['customer_name', 'customer_name_kana']
         return column_name_lower in human_name_columns
 
 
-    def _has_already_made_up_name_pairs(self, column_name_lower):
+    def _has_already_made_up_pairs(self, column_name_lower):
         return column_name_lower in self.possible_pair_columns.keys()
 
 
-    def _set_possible_pair_columns_and_return(self, column_name_lower, kanji, kana):
+    def _set_possible_pair_names_and_return(self, column_name_lower, kanji, kana):
         if 'kana' in column_name_lower:
             self.possible_pair_columns[column_name_lower.replace('kana', '')] = kanji
             self.possible_pair_columns[column_name_lower] = kana
