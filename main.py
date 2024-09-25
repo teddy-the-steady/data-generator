@@ -6,6 +6,6 @@ from Database import Database
 def openCsv():
     csv = Csv('MST_CUSTOMER.csv')
     dg = DataGenerator(csv)
-    dg.make_insert_queries_for_table('MST_CUSTOMER', 1000)
+    dg.make_insert_queries_for_table('MST_CUSTOMER', 10)
     
 openCsv()
