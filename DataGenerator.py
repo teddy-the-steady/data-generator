@@ -27,7 +27,7 @@ class DataGenerator():
         for column_dict in columns_dict['columns']:
             self.column = column_dict
             result = self._generate_column_items(count)
-            print(result)
+            print(self.column['column'], result)
         #   a. check format (options, code, hankaku, email? and more)
         #   b. consider length + type
         #   c. check constraint (unique=true, pk=true)
@@ -127,6 +127,10 @@ class DataGenerator():
                         break
                 return result
 
+        if self._is_number(column_name_lower):
+            if 'phone_number' in column_name_lower:
+                return self._get_random_phone_number()
+
 
     def _has_optional_choice(self, column_format):
         return 'C00' in column_format
@@ -140,6 +144,10 @@ class DataGenerator():
         return 'address' in column_name_lower
 
 
+    def _is_number(self, column_name_lower):
+        return column_name_lower.endswith('number')
+
+
     def _is_date_or_datetime(self):
         return self.column['type'].lower() in ['date', 'datetime']
 
@@ -149,7 +157,7 @@ class DataGenerator():
 
 
     def _is_human_name(self, column_name_lower):
-        human_name_columns = ['customer_name', 'customer_name_kana']
+        human_name_columns = ['customer_name', 'customer_name_kana', 'delegate_name', 'delegate_name_kana']
         return column_name_lower in human_name_columns
 
 
@@ -248,3 +256,10 @@ class DataGenerator():
         for i in range(1, length + 1):
             result += chr(random.randrange(0x4e00, 0x9fa1))
         return result
+
+
+    def _get_random_phone_number(self):
+        first = random.choice(['070', '080', '090'])
+        second = str(random.randint(0, 9999))
+        third = str(random.randint(0, 9999))
+        return f'{first}-{second.zfill(4)}-{third.zfill(4)}'
