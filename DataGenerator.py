@@ -3,7 +3,8 @@ import string
 from datetime import timedelta, datetime
 from gimei import Gimei
 import mojimoji
-from Database import Database
+
+from Cases.Optional import Optional
 
 
 class DataGenerator():
@@ -55,12 +56,7 @@ class DataGenerator():
         column_name_lower = self.column['column'].lower()
 
         if self._has_optional_choice(self.column['format']):
-            db = Database()
-            options = db._select_options(self.column['format'])
-            options_result = list()
-            for i in range(0, count):
-                options_result.append(self._get_random_choice(options))
-            return options_result
+            result_temp = Optional(count, column_metadata=self.column)
 
         if self._is_name(column_name_lower):
             if self._is_human_name(column_name_lower):
@@ -131,6 +127,8 @@ class DataGenerator():
             if 'phone_number' in column_name_lower:
                 return self._get_random_phone_number()
 
+        return result_temp.make_column()
+
 
     def _has_optional_choice(self, column_format):
         return 'C00' in column_format
@@ -193,10 +191,6 @@ class DataGenerator():
 
     def _is_hankaku_kana(self, column_format):
         return 'hankaku_kana' in column_format
-
-
-    def _get_random_choice(self, options_list):
-        return random.choice(options_list)
 
 
     def _get_random_datetime_between(self, start, end, is_date_only=False):
