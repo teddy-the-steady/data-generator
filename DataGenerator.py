@@ -6,6 +6,8 @@ from Cases.Optional import Optional
 from Cases.HumanName import HumanName
 from Cases.Address import Address
 from Cases.PhoneNumber import PhoneNumber
+from Cases.DateTime import DateTime
+
 
 
 class DataGenerator():
@@ -52,7 +54,6 @@ class DataGenerator():
 
 
     def _generate_column_items(self, count):
-        result = set()
         column_name_lower = self.column_metadata['column'].lower()
 
         if self._has_optional_choice(self.column_metadata['format']):
@@ -61,49 +62,21 @@ class DataGenerator():
 
         if self._is_name(column_name_lower):
             if self._is_human_name(column_name_lower):
-                human_name = HumanName(count, self.column_metadata)
-                return human_name.make_column()
+                result_temp = HumanName(count, self.column_metadata)
+                return result_temp.make_column()
 
         if self._is_address(column_name_lower):
-            address = Address(count, self.column_metadata)
-            return address.make_column()
+            result_temp = Address(count, self.column_metadata)
+            return result_temp.make_column()
 
         if self._is_date_or_datetime():
-            if 'datetime' in self.column_metadata['type'].lower():
-                while True:
-                    result.add(self._get_random_datetime_between('2024-01-01', '2024-05-10'))
-                    if len(result) == count:
-                        break
-                return list(result)
-            if 'date' in self.column_metadata['type'].lower():
-                if self._is_date_pair(column_name_lower):
-                    if self._has_already_made_up_pairs(column_name_lower):
-                        return self.possible_pair_columns[column_name_lower]
-
-                    start_date = set()
-                    while True:
-                        start_date.add(self._get_random_datetime_between('2018-01-01', '2023-12-31', is_date_only=True))
-                        if len(start_date) == count:
-                            break
-
-                    end_date = set()
-                    while True:
-                        end_date.add(self._get_random_datetime_between('2024-01-01', '2024-05-10', is_date_only=True))
-                        if len(end_date) == count:
-                            break
-
-                    return self._set_possible_pair_dates_and_return(column_name_lower, list(start_date), list(end_date))
-
-                while True:
-                    result.add(self._get_random_datetime_between('2024-01-10', '2024-05-10', is_date_only=True))
-                    if len(result) == count:
-                        break
-                return result
+            result_temp = DateTime(count, self.column_metadata)
+            return result_temp.make_column()
 
         if self._is_number(column_name_lower):
             if 'phone_number' in column_name_lower:
-                phone_number = PhoneNumber(count, self.column_metadata)
-                return phone_number.make_column()
+                result_temp = PhoneNumber(count, self.column_metadata)
+                return result_temp.make_column()
 
 
     def _has_optional_choice(self, column_format):
@@ -126,48 +99,9 @@ class DataGenerator():
         return self.column_metadata['type'].lower() in ['date', 'datetime']
 
 
-    def _is_date_pair(self, column_name_lower):
-        return any(x in column_name_lower for x in ['start', 'end'])
-
-
     def _is_human_name(self, column_name_lower):
         human_name_columns = ['customer_name', 'customer_name_kana', 'delegate_name', 'delegate_name_kana']
         return column_name_lower in human_name_columns
-
-
-    def _has_already_made_up_pairs(self, column_name_lower):
-        return column_name_lower in self.possible_pair_columns.keys()
-
-
-    def _set_possible_pair_dates_and_return(self, column_name_lower, start_date, end_date):
-        if 'start' in column_name_lower:
-            self.possible_pair_columns[column_name_lower] = start_date
-            self.possible_pair_columns[column_name_lower.replace('start', 'end')] = end_date
-
-            return self.possible_pair_columns[column_name_lower]
-        elif 'end' in column_name_lower:
-            self.possible_pair_columns[column_name_lower] = end_date
-            self.possible_pair_columns[column_name_lower.replace('end', 'start')] = start_date
-
-            return self.possible_pair_columns[column_name_lower]
-
-
-    def _is_hankaku_kana(self, column_format):
-        return 'hankaku_kana' in column_format
-
-
-    def _get_random_datetime_between(self, start, end, is_date_only=False):
-        try:
-            delta = datetime.fromisoformat(end) - datetime.fromisoformat(start)
-        except ValueError:
-            raise ValueError("Incorrect data format, should be YYYY-MM-DD")
-        int_delta = (delta.days * 24 * 60 * 60) + delta.seconds
-        random_second = random.randrange(int_delta)
-
-        result = datetime.fromisoformat(start) + timedelta(seconds = random_second)
-        if is_date_only:
-            return str(result).split()[0]
-        return result.__str__()
 
 
     def _get_random_number_code(self, length):
