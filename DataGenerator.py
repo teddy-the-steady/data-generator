@@ -1,10 +1,10 @@
 import random
 import string
-from datetime import timedelta, datetime
 
 from Cases.Optional import Optional
 from Cases.HumanName import HumanName
 from Cases.Address import Address
+from Cases.Number import Number
 from Cases.PhoneNumber import PhoneNumber
 from Cases.DateTime import DateTime
 
@@ -77,7 +77,9 @@ class DataGenerator():
             if 'phone_number' in column_name_lower:
                 result_temp = PhoneNumber(count, self.column_metadata)
                 return result_temp.make_column()
-
+            else:
+                result_temp = Number(count, self.column_metadata)
+                return result_temp.make_column()
 
     def _has_optional_choice(self, column_format):
         return 'C00' in column_format
@@ -92,7 +94,10 @@ class DataGenerator():
 
 
     def _is_number(self, column_name_lower):
-        return column_name_lower.endswith('number')
+        ends_with_number = column_name_lower.endswith('number')
+        ends_with_no = column_name_lower.endswith('_no')
+        type_numeric = self.column_metadata['type'].lower() == 'numeric'
+        return  ends_with_number or ends_with_no or type_numeric
 
 
     def _is_date_or_datetime(self):
@@ -102,10 +107,6 @@ class DataGenerator():
     def _is_human_name(self, column_name_lower):
         human_name_columns = ['customer_name', 'customer_name_kana', 'delegate_name', 'delegate_name_kana']
         return column_name_lower in human_name_columns
-
-
-    def _get_random_number_code(self, length):
-        return random.randrange(10 ** (length - 1), 10 ** (length))
 
 
     def _get_random_alpha_numeric_code(self, length):

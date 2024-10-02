@@ -4,16 +4,16 @@ from Cases.Case import Case
 
 
 class Optional(Case):
-    result = list()
-
     def make_column(self):
+        result = list()
+
         # TODO] temp comment for no database setup case
         db = Database()
         options = db._select_options(self.column_metadata['format'])
         # options = [0, 1, 2]
         for i in range(0, self.count):
-            self.result.append(self._get_random_choice(options))
-        return self.result
+            result.append(self._get_random_choice(options))
+        return result
     
 
     def _get_random_choice(self, options_list):
