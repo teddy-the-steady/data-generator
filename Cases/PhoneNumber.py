@@ -4,8 +4,6 @@ from Cases.Case import Case
 
 
 class PhoneNumber(Case):
-    result = list()
-
     def make_column(self):
         return self._get_random_phone_number()
     
