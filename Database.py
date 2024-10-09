@@ -1,6 +1,5 @@
 import pyodbc
 
-
 class Database():
     def __init__(self):
         DRIVER= '{ODBC Driver 17 for SQL Server}'
