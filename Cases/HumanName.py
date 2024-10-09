@@ -1,7 +1,6 @@
 from gimei import Gimei
 from Cases.Case import Case
 
-
 class HumanName(Case):
     def make_column(self):
         if self._has_already_made_up_pairs():

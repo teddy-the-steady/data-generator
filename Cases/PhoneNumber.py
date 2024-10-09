@@ -1,11 +1,14 @@
 import random
-from Database import Database
 from Cases.Case import Case
-
 
 class PhoneNumber(Case):
     def make_column(self):
-        return self._get_random_phone_number()
+        result = set()
+        while True:
+            result.add(self._get_random_phone_number())
+            if len(result) == self.count:
+                break
+        return list(result)
     
 
     def _get_random_phone_number(self):

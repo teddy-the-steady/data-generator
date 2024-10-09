@@ -7,8 +7,7 @@ from Cases.Address import Address
 from Cases.Number import Number
 from Cases.PhoneNumber import PhoneNumber
 from Cases.DateTime import DateTime
-
-
+from Cases.Code import Code
 
 class DataGenerator():
     possible_pair_columns = {}
@@ -81,6 +80,11 @@ class DataGenerator():
                 result_temp = Number(count, self.column_metadata)
                 return result_temp.make_column()
 
+        if self._is_code(column_name_lower):
+            result_temp = Code(count, self.column_metadata)
+            return result_temp.make_column()
+
+
     def _has_optional_choice(self, column_format):
         return 'C00' in column_format
 
@@ -98,6 +102,10 @@ class DataGenerator():
         ends_with_no = column_name_lower.endswith('_no')
         type_numeric = self.column_metadata['type'].lower() == 'numeric'
         return  ends_with_number or ends_with_no or type_numeric
+
+
+    def _is_code(self, column_name_lower):
+        return column_name_lower.endswith('_code')
 
 
     def _is_date_or_datetime(self):

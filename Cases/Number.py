@@ -2,7 +2,6 @@ import random
 import scipy.stats as stats
 from Cases.Case import Case
 
-
 class Number(Case):
     def make_column(self):
         if self._has_decimal():

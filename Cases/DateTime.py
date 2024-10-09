@@ -2,7 +2,6 @@ from Cases.Case import Case
 import random
 from datetime import timedelta, datetime
 
-
 class DateTime(Case):
     def make_column(self):
         result = set()
