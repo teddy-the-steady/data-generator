@@ -26,10 +26,7 @@ class Csv():
 
         with open(self.csv_path, 'r') as file:
             for index, line in enumerate(csv.reader(file)):
-                if index == 0:
-                    self._check_header(line)
-                else:
-                    result.add(line[self.table_name_index])
+                result.add(line[self.table_name_index])
 
         return list(result)
 
@@ -39,29 +36,24 @@ class Csv():
 
         with open(self.csv_path, 'r') as file:
             for index, line in enumerate(csv.reader(file)):
-                if index == 0:
-                    self._check_header(line)
-                else:
-                    if 'fk.' in line[self.constraint_index]:
-                        result.append({
-                            'column': f"{line[self.table_name_index]}.{line[self.column_name_index]}",
-                            'constraint': line[self.constraint_index]
-                        })
+                if 'fk.' in line[self.constraint_index]:
+                    result.append({
+                        'column': f"{line[self.table_name_index]}.{line[self.column_name_index]}",
+                        'constraint': line[self.constraint_index]
+                    })
+
+        self._check_fk_tables_exist(result)
 
         return result
 
 
     def get_columns(self, table_name):
         result = []
-        table_name_index = 0
 
         with open(self.csv_path, 'r') as file:
             for index, line in enumerate(csv.reader(file)):
-                if index == 0:
-                    self._check_header(line)
-                    table_name_index = line.index('table_name')
-                elif line[table_name_index] == table_name:
-                    result.append(line)
+                line[self.table_name_index] == table_name
+                result.append(line)
 
         return result
 
@@ -76,3 +68,13 @@ class Csv():
             'format'
         ]).issubset(header_candidate):
             raise Exception('No proper header found in csv file')
+
+
+    def _check_fk_tables_exist(self, fk_dicts):
+        for fk_dict in fk_dicts:
+            if not self._get_fk_table(fk_dict) in self.tables:
+                raise Exception('Please provide fk table in your csv file.')
+
+
+    def _get_fk_table(self, fk_dict):
+        return fk_dict['constraint'].split('.')[1]
