@@ -9,6 +9,8 @@ from Cases.PhoneNumber import PhoneNumber
 from Cases.DateTime import DateTime
 from Cases.Code import Code
 
+from Metadata.Table import Table
+
 class DataGenerator():
     possible_pair_columns = {}
 
@@ -16,18 +18,13 @@ class DataGenerator():
         self.csv = csv
 
 
-    def make_insert_queries_for_table(self, table_name, count):
-        if not table_name in self.csv.tables:
-            raise Exception('Table name not found')
-
-        columns = self.csv.get_columns(table_name)
-        tables_metadata = self._tables_to_dict(columns)
+    def make_insert_queries_for_csv(self, count):
+        tables = self.csv.csv_to_dict()
         # TODO
         # 1. decide how to deal with FK situation!!!!
-        print(tables_metadata)
         # 2. make sets of each column
-        index = self._find_index_of_table_from_table_metadata(tables_metadata, 'MST_CUSTOMER')
-        for column_metadata in tables_metadata[index]['columns']:
+        index = Table.index_of_table(tables, 'MST_CUSTOMER')
+        for column_metadata in tables[index].columns:
             self.column_metadata = column_metadata
             result = self._generate_column_items(count)
             print(self.column_metadata['column'], result)
@@ -36,33 +33,6 @@ class DataGenerator():
         #   c. check constraint (unique=true, pk=true)
         #   d. use random function (+ set)
         # 3. combine list(set) of columns to make rows
-
-
-    def _tables_to_dict(self, columns):
-        result = []
-        for table_name in self.csv.tables:
-            result.append({
-                'table_name': table_name,
-                'columns': []
-            })
-
-        for column in columns:
-            table_name = ''
-            dicted_column = dict()
-            for header_item in self.csv.header:
-                if header_item == 'table_name':
-                    table_name = column[self.csv.header.index(header_item)]
-                else:
-                    dicted_column[header_item] = column[self.csv.header.index(header_item)]
-
-            index = self._find_index_of_table_from_table_metadata(result, table_name)
-            result[index]['columns'].append(dicted_column)
-
-        return result
-
-
-    def _find_index_of_table_from_table_metadata(self, table_metadata, table_name):
-        return [i for i, d in enumerate(table_metadata) if d.get('table_name') == table_name][0]
 
 
     def _generate_column_items(self, count):

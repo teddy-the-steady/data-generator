@@ -1,4 +1,5 @@
 import csv
+from Metadata.Table import Table
 
 class Csv():
     def __init__(self, csv_path):
@@ -48,16 +49,39 @@ class Csv():
         return result
 
 
-    def get_columns(self, table_name):
+    def get_columns(self):
         result = []
 
         with open(self.csv_path, 'r') as file:
             for index, line in enumerate(csv.reader(file)):
                 if index == 0: continue
-                line[self.table_name_index] == table_name
                 result.append(line)
 
         return result
+
+
+    def csv_to_dict(self):
+        tables = []
+        for table_name in self.tables:
+            table = Table({
+                'table_name': table_name,
+                'columns': []
+            })
+            tables.append(table)
+
+        for column in self.get_columns():
+            table_name = ''
+            dicted_column = dict()
+            for header_item in self.header:
+                if header_item == 'table_name':
+                    table_name = column[self.header.index(header_item)]
+                else:
+                    dicted_column[header_item] = column[self.header.index(header_item)]
+
+            index = Table.index_of_table(tables, table_name)
+            tables[index].append_column(dicted_column)
+
+        return tables
 
 
     def _check_header(self, header_candidate):
