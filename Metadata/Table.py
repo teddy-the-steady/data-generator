@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 class Table(object):
     def __init__(self, data):
         self._table_name = data['table_name']
@@ -16,7 +18,7 @@ class Table(object):
 
     @property
     def columns(self):
-        return self._columns
+        return deepcopy(self._columns)
 
 
     def append_column(self, value):
