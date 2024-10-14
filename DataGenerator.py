@@ -21,12 +21,13 @@ class DataGenerator():
             raise Exception('Table name not found')
 
         columns = self.csv.get_columns(table_name)
+        tables_metadata = self._tables_to_dict(columns)
         # TODO
-        # 1. make table a dict
-        columns_metadata = self._columns_to_dict(columns)
+        # 1. decide how to deal with FK situation!!!!
+        print(tables_metadata)
         # 2. make sets of each column
-        print(columns_metadata)
-        for column_metadata in columns_metadata['columns']:
+        index = self._find_index_of_table_from_table_metadata(tables_metadata, 'MST_CUSTOMER')
+        for column_metadata in tables_metadata[index]['columns']:
             self.column_metadata = column_metadata
             result = self._generate_column_items(count)
             print(self.column_metadata['column'], result)
@@ -37,19 +38,31 @@ class DataGenerator():
         # 3. combine list(set) of columns to make rows
 
 
-    def _columns_to_dict(self, columns):
-        dicted_columns = []
+    def _tables_to_dict(self, columns):
+        result = []
+        for table_name in self.csv.tables:
+            result.append({
+                'table_name': table_name,
+                'columns': []
+            })
+
         for column in columns:
+            table_name = ''
             dicted_column = dict()
             for header_item in self.csv.header:
-                if not header_item == 'table_name':
+                if header_item == 'table_name':
+                    table_name = column[self.csv.header.index(header_item)]
+                else:
                     dicted_column[header_item] = column[self.csv.header.index(header_item)]
-            dicted_columns.append(dicted_column)
 
-        return {
-            'table_name': columns[0][self.csv.header.index('table_name')],
-            'columns': dicted_columns
-        }
+            index = self._find_index_of_table_from_table_metadata(result, table_name)
+            result[index]['columns'].append(dicted_column)
+
+        return result
+
+
+    def _find_index_of_table_from_table_metadata(self, table_metadata, table_name):
+        return [i for i, d in enumerate(table_metadata) if d.get('table_name') == table_name][0]
 
 
     def _generate_column_items(self, count):

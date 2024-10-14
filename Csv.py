@@ -26,6 +26,7 @@ class Csv():
 
         with open(self.csv_path, 'r') as file:
             for index, line in enumerate(csv.reader(file)):
+                if index == 0: continue
                 result.add(line[self.table_name_index])
 
         return list(result)
@@ -52,6 +53,7 @@ class Csv():
 
         with open(self.csv_path, 'r') as file:
             for index, line in enumerate(csv.reader(file)):
+                if index == 0: continue
                 line[self.table_name_index] == table_name
                 result.append(line)
 
