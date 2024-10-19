@@ -21,8 +21,7 @@ class DataGenerator():
     def make_insert_queries_for_csv(self, count):
         tables = self.csv.csv_to_dict()
         # TODO
-        # 1. decide how to deal with FK situation!!!!
-        # 2. make sets of each column
+        # 1. make sets of each column
         index = Table.index_of_table(tables, 'MST_CUSTOMER')
         for column_metadata in tables[index].columns:
             self.column_metadata = column_metadata
@@ -32,8 +31,10 @@ class DataGenerator():
         #   b. consider length + type
         #   c. check constraint (unique=true, pk=true)
         #   d. use random function (+ set)
-        # 3. combine list(set) of columns to make rows
-
+        # 2. combine list(set) of columns to make rows
+        # 3. decide how to deal with FK situation!!!!
+        # >> after making up all the columns and then give correction
+        # >> when insert, consider the order of tables referring and referred
 
     def _generate_column_items(self, count):
         column_name_lower = self.column_metadata['column'].lower()
