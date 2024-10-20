@@ -8,6 +8,7 @@ from Cases.Number import Number
 from Cases.PhoneNumber import PhoneNumber
 from Cases.DateTime import DateTime
 from Cases.Code import Code
+from Cases.Email import Email
 
 from Metadata.Table import Table
 
@@ -22,7 +23,7 @@ class DataGenerator():
         tables = self.csv.csv_to_dict()
         # TODO
         # 1. make sets of each column
-        index = Table.index_of_table(tables, 'MST_CUSTOMER')
+        index = Table.index_of_table(tables, 'MST_EXAMPLE')
         for column_metadata in tables[index].columns:
             self.column_metadata = column_metadata
             result = self._generate_column_items(count)
@@ -40,33 +41,37 @@ class DataGenerator():
         column_name_lower = self.column_metadata['column'].lower()
 
         if self._has_optional_choice(self.column_metadata['format']):
-            result_temp = Optional(count, self.column_metadata)
-            return result_temp.make_column()
+            result = Optional(count, self.column_metadata)
+            return result.make_column()
 
         if self._is_name(column_name_lower):
             if self._is_human_name(column_name_lower):
-                result_temp = HumanName(count, self.column_metadata)
-                return result_temp.make_column()
+                result = HumanName(count, self.column_metadata)
+                return result.make_column()
+
+        if self._is_email(column_name_lower):
+            result = Email(count, self.column_metadata)
+            return result.make_column()
 
         if self._is_address(column_name_lower):
-            result_temp = Address(count, self.column_metadata)
-            return result_temp.make_column()
+            result = Address(count, self.column_metadata)
+            return result.make_column()
 
         if self._is_date_or_datetime():
-            result_temp = DateTime(count, self.column_metadata)
-            return result_temp.make_column()
+            result = DateTime(count, self.column_metadata)
+            return result.make_column()
 
         if self._is_number(column_name_lower):
             if 'phone_number' in column_name_lower:
-                result_temp = PhoneNumber(count, self.column_metadata)
-                return result_temp.make_column()
+                result = PhoneNumber(count, self.column_metadata)
+                return result.make_column()
             else:
-                result_temp = Number(count, self.column_metadata)
-                return result_temp.make_column()
+                result = Number(count, self.column_metadata)
+                return result.make_column()
 
         if self._is_code(column_name_lower):
-            result_temp = Code(count, self.column_metadata)
-            return result_temp.make_column()
+            result = Code(count, self.column_metadata)
+            return result.make_column()
 
 
     def _has_optional_choice(self, column_format):
@@ -79,6 +84,10 @@ class DataGenerator():
 
     def _is_address(self, column_name_lower):
         return 'address' in column_name_lower
+
+
+    def _is_email(self, column_name_lower):
+        return 'email' in column_name_lower
 
 
     def _is_number(self, column_name_lower):
