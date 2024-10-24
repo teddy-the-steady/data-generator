@@ -9,6 +9,11 @@ class Csv():
         self.foreign_keys = self.get_foreign_keys()
 
 
+    @staticmethod
+    def index_of_table(tables, table_name):
+        return [i for i, d in enumerate(tables) if d.table_name == table_name][0]
+
+
     def get_header(self):
         with open(self.csv_path, 'r') as file:
             for index, header in enumerate(csv.reader(file)):
@@ -78,7 +83,7 @@ class Csv():
                 else:
                     dicted_column[header_item] = column[self.header.index(header_item)]
 
-            index = Table.index_of_table(tables, table_name)
+            index = Csv.index_of_table(tables, table_name)
             tables[index].append_column(dicted_column)
 
         return tables

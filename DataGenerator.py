@@ -10,7 +10,7 @@ from Cases.DateTime import DateTime
 from Cases.Code import Code
 from Cases.Email import Email
 
-from Metadata.Table import Table
+from Csv import Csv
 
 class DataGenerator():
     possible_pair_columns = {}
@@ -23,7 +23,7 @@ class DataGenerator():
         tables = self.csv.csv_to_dict()
         # TODO
         # 1. make sets of each column
-        index = Table.index_of_table(tables, 'MST_EXAMPLE')
+        index = Csv.index_of_table(tables, 'MST_FINANCIAL_INSTITUTION')
         for column_metadata in tables[index].columns:
             result = self._generate_column_items(count, column_metadata)
             print(column_metadata['column'], result)
