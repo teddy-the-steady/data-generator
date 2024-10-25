@@ -4,6 +4,7 @@ class Table(object):
     def __init__(self, data):
         self._table_name = data['table_name']
         self._columns = data['columns']
+        self._columns = data['foreign_keys']
 
 
     @property
@@ -23,6 +24,16 @@ class Table(object):
 
     def append_column(self, value):
         self._columns.append(value)
+
+
+    @property
+    def foreign_key(self):
+        return self._foreign_key
+
+
+    @foreign_key.setter
+    def foreign_key(self, value):
+        self._foreign_key = value
 
 
     @staticmethod

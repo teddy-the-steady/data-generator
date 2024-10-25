@@ -20,11 +20,10 @@ class DataGenerator():
 
 
     def make_insert_queries_for_csv(self, count):
-        tables = self.csv.csv_to_dict()
         # TODO
         # 1. make sets of each column
-        index = Csv.index_of_table(tables, 'MST_FINANCIAL_INSTITUTION')
-        for column_metadata in tables[index].columns:
+        index = Csv.index_of_table(self.csv.tables, 'MST_FINANCIAL_INSTITUTION')
+        for column_metadata in self.csv.tables[index].columns:
             result = self._generate_column_items(count, column_metadata)
             print(column_metadata['column'], result)
         #   a. check format (options, code, hankaku, email? and more)
