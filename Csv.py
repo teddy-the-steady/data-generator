@@ -4,17 +4,17 @@ from Metadata.Table import Table
 class Csv():
     def __init__(self, csv_path):
         self.csv_path = csv_path
-        self.header = self.get_header()
-        self.tables = self.get_tables()
-        self.foreign_keys = self.get_foreign_keys()
+        self.header = self.set_header()
+        self.table_names = self.set_table_names()
+        self.foreign_keys = self.set_foreign_keys()
 
 
     @staticmethod
-    def index_of_table(tables, table_name):
-        return [i for i, d in enumerate(tables) if d.table_name == table_name][0]
+    def index_of_table(table_names, table_name):
+        return [i for i, d in enumerate(table_names) if d.table_name == table_name][0]
 
 
-    def get_header(self):
+    def set_header(self):
         with open(self.csv_path, 'r') as file:
             for index, header in enumerate(csv.reader(file)):
                 if index == 0:
@@ -27,7 +27,7 @@ class Csv():
                     return header
 
 
-    def get_tables(self):
+    def set_table_names(self):
         result = set()
 
         with open(self.csv_path, 'r') as file:
@@ -38,7 +38,7 @@ class Csv():
         return list(result)
 
 
-    def get_foreign_keys(self):
+    def set_foreign_keys(self):
         result = list()
 
         with open(self.csv_path, 'r') as file:
@@ -67,7 +67,7 @@ class Csv():
 
     def csv_to_dict(self):
         tables = []
-        for table_name in self.tables:
+        for table_name in self.table_names:
             table = Table({
                 'table_name': table_name,
                 'columns': []
@@ -103,7 +103,7 @@ class Csv():
 
     def _check_fk_tables_exist(self, fk_dicts):
         for fk_dict in fk_dicts:
-            if not self._get_fk_table(fk_dict) in self.tables:
+            if not self._get_fk_table(fk_dict) in self.table_names:
                 raise Exception('Please provide fk table in your csv file.')
 
 
