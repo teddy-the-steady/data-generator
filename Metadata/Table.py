@@ -4,7 +4,7 @@ class Table(object):
     def __init__(self, data):
         self._table_name = data['table_name']
         self._columns = data['columns']
-        self._columns = data['foreign_keys']
+        self._foreign_keys = data['foreign_keys']
 
 
     @property
@@ -27,22 +27,17 @@ class Table(object):
 
 
     @property
-    def foreign_key(self):
-        return self._foreign_key
+    def foreign_keys(self):
+        return self._foreign_keys
 
 
-    @foreign_key.setter
-    def foreign_key(self, value):
-        self._foreign_key = value
-
-
-    @staticmethod
-    def index_of_table(tables, table_name):
-        return [i for i, d in enumerate(tables) if d.table_name == table_name][0]
+    def append_foreign_keys(self, value):
+        self._foreign_keys.append(value)
 
 
     def __str__(self):
      return str({
          'table_name': self._table_name,
-         'columns': self._columns
+         'columns': self._columns,
+         'foreign_keys': self._foreign_keys
      })

@@ -6,13 +6,17 @@ class Csv():
         self.csv_path = csv_path
         self.header = self._set_header()
         self.table_names = self._set_table_names()
-        self.tables = self._set_tables()
-        self.foreign_keys = self._set_foreign_keys()
+        self.tables = self._set_tables(self.header, self.table_names)
+        self._set_foreign_keys(self.tables)
 
 
     @staticmethod
     def index_of_table(tables_dict, table_name):
-        return [i for i, d in enumerate(tables_dict) if d.table_name == table_name][0]
+        index_list = [i for i, d in enumerate(tables_dict) if d.table_name == table_name]
+        if len(index_list) == 0:
+            raise Exception('Table not found')
+
+        return index_list[0]
 
 
     def get_columns(self):
@@ -26,15 +30,15 @@ class Csv():
         return result
 
 
-    def _set_tables(self):
-        table_obj_list = self._make_tables_dict()
-        result = self._append_column_metadata(table_obj_list)
+    def _set_tables(self, header, table_names):
+        table_obj_list = self._make_tables_dict(table_names)
+        result = self._append_column_metadata(header, table_obj_list)
         return result
 
 
-    def _make_tables_dict(self):
+    def _make_tables_dict(self, table_names):
         result = []
-        for table_name in self.table_names:
+        for table_name in table_names:
             table = Table({
                 'table_name': '',
                 'columns': [],
@@ -47,15 +51,15 @@ class Csv():
         return result
 
 
-    def _append_column_metadata(self, table_obj_list):
+    def _append_column_metadata(self, header,  table_obj_list):
         for column in self.get_columns():
             table_name = ''
             dicted_column = dict()
-            for header_item in self.header:
+            for header_item in header:
                 if header_item == 'table_name':
-                    table_name = column[self.header.index(header_item)]
+                    table_name = column[header.index(header_item)]
                 else:
-                    dicted_column[header_item] = column[self.header.index(header_item)]
+                    dicted_column[header_item] = column[header.index(header_item)]
 
             index = Csv.index_of_table(table_obj_list, table_name)
             table_obj_list[index].append_column(dicted_column)
@@ -87,20 +91,19 @@ class Csv():
         return list(result)
 
 
-    def _set_foreign_keys(self):
+    def _set_foreign_keys(self, tables):
         result = list()
 
         with open(self.csv_path, 'r') as file:
             for index, line in enumerate(csv.reader(file)):
                 if 'fk.' in line[self.constraint_index]:
                     result.append({
-                        'column': f"{line[self.table_name_index]}.{line[self.column_name_index]}",
+                        'table_name': line[self.table_name_index],
+                        'column': line[self.column_name_index],
                         'constraint': line[self.constraint_index]
                     })
 
-        self._check_fk_tables_exist(result)
-
-        return result
+        self._set_fk_to_table(result, tables)
 
 
     def _check_header(self, header_candidate):
@@ -115,11 +118,19 @@ class Csv():
             raise Exception('No proper header found in csv file')
 
 
-    def _check_fk_tables_exist(self, fk_dicts):
+    def _set_fk_to_table(self, fk_dicts, tables):
         for fk_dict in fk_dicts:
-            if not self._get_fk_table(fk_dict) in self.table_names:
+            if not self._get_fk_target_table(fk_dict) in self.table_names:
                 raise Exception('Please provide fk table in your csv file.')
 
+            table = tables[Csv.index_of_table(tables, fk_dict['table_name'])]
+            del fk_dict['table_name']
+            table.append_foreign_keys(fk_dict)
 
-    def _get_fk_table(self, fk_dict):
+
+    def _get_fk_holding_table(self, fk_dict):
+        return fk_dict['column'].split('.')[0]
+
+
+    def _get_fk_target_table(self, fk_dict):
         return fk_dict['constraint'].split('.')[1]
