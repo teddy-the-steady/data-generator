@@ -1,6 +1,3 @@
-import random
-import string
-
 from Cases.Optional import Optional
 from Cases.HumanName import HumanName
 from Cases.Address import Address
@@ -107,32 +104,3 @@ class DataGenerator():
     def _is_human_name(self, column_name):
         human_name_columns = ['customer_name', 'customer_name_kana', 'delegate_name', 'delegate_name_kana']
         return column_name in human_name_columns
-
-
-    def _get_random_alpha_numeric_code(self, length):
-        return ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(length))
-
-
-    def _get_random_alphabetic_code(self, length):
-       return ''.join(random.choice(string.ascii_letters) for x in range(length))
-
-
-    def _get_random_hiragana(self, length):
-        result = ''
-        for i in range(1, length + 1):
-            result += chr(random.randrange(0x3041, 0x309B))
-        return result
-
-
-    def _get_random_katakana(self, length):
-        result = ''
-        for i in range(1, length + 1):
-            result += chr(random.randrange(0x30a1, 0x30F7))
-        return result
-
-
-    def _get_random_kanji(self, length):
-        result = ''
-        for i in range(1, length + 1):
-            result += chr(random.randrange(0x4e00, 0x9fa1))
-        return result
