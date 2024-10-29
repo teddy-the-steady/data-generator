@@ -11,8 +11,24 @@ class Number(Case):
             for i in range(0, self.count):
                 result.append(self._get_random_number_with_decimal(int(splitted[0]), int(splitted[1])))
             return result
+        else:
+            length_int = int(self.column_metadata['length'])
 
-        return self._get_random_number_code(3)
+            if 'unique' in self.column_metadata['constraint']:
+                result = set()
+                while True:
+                    result.add(self._get_random_number_code(length_int))
+                    if len(result) == self.count:
+                        break
+
+                return list(result)
+
+            else:
+                result = list()
+                for i in range(0, self.count):
+                    result.append(self._get_random_number_code(length_int))
+                return result
+
 
 
     def _get_random_number_code(self, length):
