@@ -51,7 +51,7 @@ class Csv():
         return result
 
 
-    def _append_column_metadata(self, header,  table_obj_list):
+    def _append_column_metadata(self, header, table_obj_list):
         for column in self.get_columns():
             table_name = ''
             dicted_column = dict()
@@ -126,10 +126,6 @@ class Csv():
             table = tables[Csv.index_of_table(tables, fk_dict['table_name'])]
             del fk_dict['table_name']
             table.append_foreign_keys(fk_dict)
-
-
-    def _get_fk_holding_table(self, fk_dict):
-        return fk_dict['column'].split('.')[0]
 
 
     def _get_fk_target_table(self, fk_dict):
