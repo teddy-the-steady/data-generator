@@ -13,11 +13,16 @@ class Number(Case):
             return result
         else:
             length_int = int(self.column_metadata['length'])
+            is_char = self.column_metadata['type'].lower() == 'char'
 
             if 'unique' in self.column_metadata['constraint']:
                 result = set()
                 while True:
-                    result.add(self._get_random_number_code(length_int))
+                    result.add(
+                        self._get_random_number_of_digits(length_int)
+                        if is_char else
+                        self._get_random_number_lt(length_int)
+                    )
                     if len(result) == self.count:
                         break
 
@@ -26,12 +31,19 @@ class Number(Case):
             else:
                 result = list()
                 for i in range(0, self.count):
-                    result.append(self._get_random_number_code(length_int))
+                    result.append(
+                        self._get_random_number_of_digits(length_int)
+                        if is_char else
+                        self._get_random_number_lt(length_int)
+                    )
                 return result
 
 
+    def _get_random_number_lt(self, length):
+        return random.randrange(1, 10 ** (length))
 
-    def _get_random_number_code(self, length):
+
+    def _get_random_number_of_digits(self, length):
         return random.randrange(10 ** (length - 1), 10 ** (length))
 
 
