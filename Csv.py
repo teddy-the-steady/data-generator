@@ -53,6 +53,9 @@ class Csv():
 
     def _append_column_metadata(self, header, table_obj_list):
         for column in self.get_columns():
+            if column[header.index('constraint')] == 'pk':
+                continue
+
             table_name = ''
             dicted_column = dict()
             for header_item in header:

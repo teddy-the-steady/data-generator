@@ -22,7 +22,7 @@ class DataGenerator():
     def make_insert_queries_for_csv(self, count):
         # TODO
         # 1. make sets of each column
-        index = Csv.index_of_table(self.csv.tables, 'MST_FINANCIAL_INSTITUTION')
+        index = Csv.index_of_table(self.csv.tables, 'MST_CUSTOMER')
         for column_metadata in self.csv.tables[index].columns:
             result = self._generate_column_items(count, column_metadata)
             print(column_metadata['column'], result)
