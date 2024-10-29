@@ -9,7 +9,7 @@ class Table(object):
 
     @property
     def table_name(self):
-        return self._table_name
+        return deepcopy(self._table_name)
 
 
     @table_name.setter
@@ -28,7 +28,7 @@ class Table(object):
 
     @property
     def foreign_keys(self):
-        return self._foreign_keys
+        return deepcopy(self._foreign_keys)
 
 
     def append_foreign_keys(self, value):
