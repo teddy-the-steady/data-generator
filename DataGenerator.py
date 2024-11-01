@@ -6,6 +6,7 @@ from Cases.PhoneNumber import PhoneNumber
 from Cases.DateTime import DateTime
 from Cases.Code import Code
 from Cases.Email import Email
+from Cases.Etc import Etc
 
 from Csv import Csv
 
@@ -14,6 +15,7 @@ class DataGenerator():
 
     def __init__(self, csv):
         self.csv = csv
+        self.unsupported_columns = list()
 
 
     def make_insert_queries_for_csv(self, count):
@@ -23,6 +25,9 @@ class DataGenerator():
         for column_metadata in self.csv.tables[index].columns:
             result = self._generate_column_items(count, column_metadata)
             print(column_metadata['column'], result)
+
+        if len(self.unsupported_columns) > 0:
+            raise Exception(f'Unsupported columns found: {self.unsupported_columns}')
         #   a. check format (options, code, hankaku, email? and more)
         #   b. consider length + type
         #   c. check constraint (unique=true, pk=true)
@@ -67,6 +72,12 @@ class DataGenerator():
         if self._is_code(column_name):
             result = Code(count, column_metadata)
             return result.make_column()
+
+        if Etc.is_etc(column_name):
+            result = Etc(count, column_metadata)
+            return result.make_column()
+
+        self.unsupported_columns.append(column_metadata['column'])
 
 
     def _has_optional_choice(self, column_format):
