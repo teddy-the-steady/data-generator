@@ -50,7 +50,7 @@ class Number(Case):
     def _get_random_number_with_decimal(self, length, digits):
         a = 1  # Skewness parameter
         loc = 0  # Location parameter
-        scale = 1e9  # Scale parameter (when it comes money, 1e9 is gives billions)
+        scale = 1e9  # Scale parameter (when it comes money, 1e9 gives billions)
 
         skewnorm_dist = stats.skewnorm(a, loc, scale)
 

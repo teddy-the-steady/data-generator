@@ -94,7 +94,9 @@ class DataGenerator():
 
 
     def _is_code(self, column_name):
-        return column_name.endswith('_code')
+        ends_with_code = column_name.endswith('_code')
+        ends_with_id = column_name.endswith('_id')
+        return ends_with_code or ends_with_id
 
 
     def _is_date_or_datetime(self, column_type):
