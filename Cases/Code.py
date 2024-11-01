@@ -11,6 +11,31 @@ class Code(Case):
                     break
             return list(result)
 
+        else:
+            if self._is_id():
+                length_int = int(self.column_metadata['length'])
+
+                result = list()
+                value = self._get_code_starting_from_digit_numbers_of_ten(length_int)
+                for i in range(0, self.count):
+                    result.append(str(value))
+                    value += 1
+                return result
+
+            if self._is_code():
+                length_int = int(self.column_metadata['length'])
+
+                result = list()
+                value = 1
+                for i in range(0, self.count):
+                    result.append(str(value).zfill(length_int))
+                    value += 1
+                return result
+
+
+    def _get_code_starting_from_digit_numbers_of_ten(self, length):
+        return 10 ** (length - 1)
+
 
     def get_random_post_code(self):
         first = str(random.randint(100, 999))
@@ -20,3 +45,11 @@ class Code(Case):
 
     def _is_post_code(self):
         return 'post_code' in self._get_column_name_lower()
+
+
+    def _is_code(self):
+        return self._get_column_name_lower().endswith('_code')
+
+
+    def _is_id(self):
+        return self._get_column_name_lower().endswith('_id')
