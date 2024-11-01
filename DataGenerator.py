@@ -1,5 +1,5 @@
 from Cases.Optional import Optional
-from Cases.HumanName import HumanName
+from Cases.Name import Name
 from Cases.Address import Address
 from Cases.Number import Number
 from Cases.PhoneNumber import PhoneNumber
@@ -41,9 +41,8 @@ class DataGenerator():
             return result.make_column()
 
         if self._is_name(column_name):
-            if self._is_human_name(column_name):
-                result = HumanName(count, column_metadata)
-                return result.make_column()
+            result = Name(count, column_metadata)
+            return result.make_column()
 
         if self._is_email(column_name):
             result = Email(count, column_metadata)
@@ -101,8 +100,3 @@ class DataGenerator():
 
     def _is_date_or_datetime(self, column_type):
         return column_type in ['date', 'datetime']
-
-
-    def _is_human_name(self, column_name):
-        human_name_columns = ['customer_name', 'customer_name_kana', 'delegate_name', 'delegate_name_kana']
-        return column_name in human_name_columns
