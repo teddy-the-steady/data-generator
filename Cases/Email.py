@@ -3,6 +3,12 @@ import json
 import random
 
 class Email(Case):
+
+    @staticmethod
+    def is_email(column_name):
+        return 'email' in column_name
+
+
     def make_column(self):
         with open('Cases/username.json', 'r') as file:
             data = json.load(file)

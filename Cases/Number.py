@@ -3,6 +3,15 @@ import scipy.stats as stats
 from Cases.Case import Case
 
 class Number(Case):
+
+    @staticmethod
+    def is_number(column_name, column_type):
+        ends_with_number = column_name.endswith('number')
+        ends_with_no = column_name.endswith('_no')
+        type_numeric = column_type.lower() == 'numeric'
+        return  ends_with_number or ends_with_no or type_numeric
+
+
     def make_column(self):
         if self._has_decimal():
             result = list()

@@ -41,27 +41,27 @@ class DataGenerator():
         column_name = column_metadata['column'].lower()
         column_type = column_metadata['type'].lower()
 
-        if self._has_optional_choice(column_metadata['format']):
+        if Optional.has_optional_choice(column_metadata['format']):
             result = Optional(count, column_metadata)
             return result.make_column()
 
-        if self._is_name(column_name):
+        if Name.is_name(column_name):
             result = Name(count, column_metadata)
             return result.make_column()
 
-        if self._is_email(column_name):
+        if Email.is_email(column_name):
             result = Email(count, column_metadata)
             return result.make_column()
 
-        if self._is_address(column_name):
+        if Address.is_address(column_name):
             result = Address(count, column_metadata)
             return result.make_column()
 
-        if self._is_date_or_datetime(column_type):
+        if DateTime.is_date_or_datetime(column_type):
             result = DateTime(count, column_metadata)
             return result.make_column()
 
-        if self._is_number(column_name, column_type):
+        if Number.is_number(column_name, column_type):
             if 'phone_number' in column_name:
                 result = PhoneNumber(count, column_metadata)
                 return result.make_column()
@@ -69,7 +69,7 @@ class DataGenerator():
                 result = Number(count, column_metadata)
                 return result.make_column()
 
-        if self._is_code(column_name):
+        if Code.is_code(column_name):
             result = Code(count, column_metadata)
             return result.make_column()
 
@@ -78,36 +78,3 @@ class DataGenerator():
             return result.make_column()
 
         self.unsupported_columns.append(column_metadata['column'])
-
-
-    def _has_optional_choice(self, column_format):
-        return 'C00' in column_format
-
-
-    def _is_name(self, column_name):
-        return 'name' in column_name
-
-
-    def _is_address(self, column_name):
-        return 'address' in column_name
-
-
-    def _is_email(self, column_name):
-        return 'email' in column_name
-
-
-    def _is_number(self, column_name, column_type):
-        ends_with_number = column_name.endswith('number')
-        ends_with_no = column_name.endswith('_no')
-        type_numeric = column_type.lower() == 'numeric'
-        return  ends_with_number or ends_with_no or type_numeric
-
-
-    def _is_code(self, column_name):
-        ends_with_code = column_name.endswith('_code')
-        ends_with_id = column_name.endswith('_id')
-        return ends_with_code or ends_with_id
-
-
-    def _is_date_or_datetime(self, column_type):
-        return column_type in ['date', 'datetime']

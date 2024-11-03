@@ -1,6 +1,7 @@
 from Cases.Case import Case
 
 class Etc(Case):
+
     @staticmethod
     def is_etc(column_name_lower):
         etc_list = ['business_content', 'comment', 'general_purpose_item_1', 'general_purpose_item_2', 'general_purpose_item_3', 'row_version']
