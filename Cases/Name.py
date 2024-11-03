@@ -3,6 +3,12 @@ from gimei import Gimei
 from Cases.Case import Case
 
 class Name(Case):
+
+    @staticmethod
+    def is_name(column_name):
+        return 'name' in column_name
+
+
     def make_column(self):
         if self._is_human_name():
             if self._has_already_made_up_pairs():

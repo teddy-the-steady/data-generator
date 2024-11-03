@@ -2,6 +2,12 @@ from gimei import Gimei
 from Cases.Case import Case
 
 class Address(Case):
+
+    @staticmethod
+    def is_address(column_name):
+        return 'address' in column_name
+
+
     def make_column(self):
         if self._has_already_made_up_pairs():
             return self.possible_pair_columns[self._get_column_name_lower()]

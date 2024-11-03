@@ -2,6 +2,14 @@ import random
 from Cases.Case import Case
 
 class Code(Case):
+
+    @staticmethod
+    def is_code(column_name):
+        ends_with_code = column_name.endswith('_code')
+        ends_with_id = column_name.endswith('_id')
+        return ends_with_code or ends_with_id
+
+
     def make_column(self):
         if self._is_post_code():
             result = set()

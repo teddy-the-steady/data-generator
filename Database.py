@@ -31,13 +31,13 @@ class Database():
         self.conn.commit()
 
 
-    def _select_options(self, division_code):
+    def select_options(self, division_code):
         result = self.fetch_all(f'''
             select ITEM_CODE from MST_CODE
             where DIVISION_CODE = '{division_code}'
         ''')
 
-        def from_tuple_list_to_list(original_list):
+        def _from_tuple_list_to_list(original_list):
             return [item[0] for item in original_list]
 
-        return from_tuple_list_to_list(result)
+        return _from_tuple_list_to_list(result)

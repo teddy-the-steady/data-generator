@@ -3,6 +3,12 @@ import random
 from datetime import timedelta, datetime
 
 class DateTime(Case):
+
+    @staticmethod
+    def is_date_or_datetime(column_type):
+        return column_type in ['date', 'datetime']
+
+
     def make_column(self):
         result = set()
         if self._is_datetime():
