@@ -2,6 +2,12 @@ import random
 from Cases.Case import Case
 
 class PhoneNumber(Case):
+
+    @staticmethod
+    def is_phone_number(column_name):
+        return 'phone_number' in column_name
+
+
     def make_column(self):
         result = set()
         while True:

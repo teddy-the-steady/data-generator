@@ -62,7 +62,7 @@ class DataGenerator():
             return result.make_column()
 
         if Number.is_number(column_name, column_type):
-            if 'phone_number' in column_name:
+            if PhoneNumber.is_phone_number(column_name):
                 result = PhoneNumber(count, column_metadata)
                 return result.make_column()
             else:
