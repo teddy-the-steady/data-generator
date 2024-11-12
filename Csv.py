@@ -30,6 +30,23 @@ class Csv():
         return result
 
 
+    '''
+        EXAMPLE
+        column_names = ['id', 'name', 'price', 'amount']
+        result_dicts = [
+            {'id': '1', 'name': 'apple', 'price': '5000', 'amount': '5'},
+            {'id': '2', 'name': 'pencil', 'price': '500', 'amount': '42'},
+            {'id': '3', 'name': 'pineapple', 'price': '8000', 'amount': '5'},
+            {'id': '4', 'name': 'pen', 'price': '1500', 'amount': '10'}
+        ]
+    '''
+    def write_results_to_csv(self, column_names, result_dicts):
+        with open('result.csv', 'w') as file:
+            writer = csv.DictWriter(file, fieldnames=column_names)
+            writer.writeheader()
+            writer.writerows(result_dicts)
+
+
     def _set_tables(self, header, table_names):
         table_obj_list = self._make_tables_dict(table_names)
         result = self._append_column_metadata(header, table_obj_list)
