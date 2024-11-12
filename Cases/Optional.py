@@ -22,5 +22,5 @@ class Optional(Case):
     
 
     def _get_random_choice(self, options_list):
-        return random.choice(options_list)
+        return str(random.choice(options_list))
     
