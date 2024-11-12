@@ -49,17 +49,17 @@ class Number(Case):
 
 
     def _get_random_number_lt(self, length):
-        return random.randrange(1, 10 ** (length))
+        return str(random.randrange(1, 10 ** (length)))
 
 
     def _get_random_number_of_digits(self, length):
-        return random.randrange(10 ** (length - 1), 10 ** (length))
+        return str(random.randrange(10 ** (length - 1), 10 ** (length)))
 
 
     def _get_random_number_with_decimal(self, length, digits):
         a = 1  # Skewness parameter
         loc = 0  # Location parameter
-        scale = 1e9  # Scale parameter (when it comes money, 1e9 gives billions)
+        scale = 1e9  # Scale parameter (when it comes to money, 1e9 gives billions)
 
         skewnorm_dist = stats.skewnorm(a, loc, scale)
 
@@ -71,7 +71,7 @@ class Number(Case):
             if value < 10 ** (length - 1)
         ]
 
-        return filtered_value[0]
+        return str(filtered_value[0])
 
 
     def _has_decimal(self):
