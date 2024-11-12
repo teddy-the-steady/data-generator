@@ -1,4 +1,5 @@
 import csv
+import pandas as pd
 from Metadata.Table import Table
 
 class Csv():
@@ -30,21 +31,21 @@ class Csv():
         return result
 
 
-    '''
-        EXAMPLE
-        column_names = ['id', 'name', 'price', 'amount']
-        result_dicts = [
-            {'id': '1', 'name': 'apple', 'price': '5000', 'amount': '5'},
-            {'id': '2', 'name': 'pencil', 'price': '500', 'amount': '42'},
-            {'id': '3', 'name': 'pineapple', 'price': '8000', 'amount': '5'},
-            {'id': '4', 'name': 'pen', 'price': '1500', 'amount': '10'}
-        ]
-    '''
-    def write_results_to_csv(self, column_names, result_dicts):
-        with open('result.csv', 'w') as file:
-            writer = csv.DictWriter(file, fieldnames=column_names)
-            writer.writeheader()
-            writer.writerows(result_dicts)
+    def write_results_to_csv(self, table_name, column_name, column_values):
+        file = f'{table_name}.csv'
+
+        try:
+            df = pd.read_csv(file)
+        except FileNotFoundError:
+            with open(file, mode='w', newline='') as f:
+                writer = csv.DictWriter(f, fieldnames=[column_name])
+                writer.writeheader()
+
+            df = pd.DataFrame(columns=[column_name])
+
+        df[column_name] = column_values
+
+        df.to_csv(file, index=False)
 
 
     def _set_tables(self, header, table_names):
