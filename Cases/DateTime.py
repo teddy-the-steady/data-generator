@@ -10,37 +10,29 @@ class DateTime(Case):
 
 
     def make_column(self):
-        result = set()
+        result = list()
         if self._is_datetime():
-            while True:
-                result.add(self._get_random_datetime_between('2024-01-01', '2024-05-10'))
-                if len(result) == self.count:
-                    break
-            return list(result)
+            for i in range(0, self.count):
+                result.append(self._get_random_datetime_between('2024-01-01', '2024-05-10'))
+            return result
 
         if self._is_date():
             if self._is_date_pair(self._get_column_name_lower()):
                 if self._has_already_made_up_pairs():
                     return self.possible_pair_columns[self._get_column_name_lower()]
 
-                start_date = set()
-                while True:
-                    start_date.add(self._get_random_datetime_between('2018-01-01', '2023-12-31', is_date_only=True))
-                    if len(start_date) == self.count:
-                        break
+                start_date = list()
+                for i in range(0, self.count):
+                    start_date.append(self._get_random_datetime_between('2018-01-01', '2023-12-31', is_date_only=True))
 
-                end_date = set()
-                while True:
-                    end_date.add(self._get_random_datetime_between('2024-01-01', '2024-05-10', is_date_only=True))
-                    if len(end_date) == self.count:
-                        break
+                end_date = list()
+                for i in range(0, self.count):
+                    end_date.append(self._get_random_datetime_between('2024-01-01', '2024-05-10', is_date_only=True))
 
                 return self._set_possible_pair_dates_and_return(list(start_date), list(end_date))
 
-            while True:
-                result.add(self._get_random_datetime_between('2024-01-10', '2024-05-10', is_date_only=True))
-                if len(result) == self.count:
-                    break
+            for i in range(0, self.count):
+                result.append(self._get_random_datetime_between('2024-01-10', '2024-05-10', is_date_only=True))
 
             return list(result)
 
