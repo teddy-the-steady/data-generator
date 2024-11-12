@@ -11,5 +11,5 @@ class Etc(Case):
     def make_column(self):
         result = list()
         for i in range(0, self.count):
-            result.append(123)
+            result.append('')
         return result

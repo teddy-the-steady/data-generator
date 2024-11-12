@@ -21,8 +21,8 @@ class DataGenerator():
     def make_insert_queries_for_csv(self, count):
         # TODO
         # 1. make sets of each column
-        result_dicts = []
-        index = Csv.index_of_table(self.csv.tables, 'MST_CUSTOMER')
+        table_name = 'MST_CUSTOMER'
+        index = Csv.index_of_table(self.csv.tables, table_name)
         for column_metadata in self.csv.tables[index].columns:
             result = self._generate_column_items(count, column_metadata)
             print(column_metadata['column'], result)
@@ -37,10 +37,11 @@ class DataGenerator():
         # >> when insert, consider the order of tables referring and referred
         # 4. export result to csv file
 
-        # self.csv.write_results_to_csv(column_names, result_dicts)
+            self.csv.write_results_to_csv(table_name, column_metadata['column'], result)
 
         if len(self.unsupported_columns) > 0:
             raise Exception(f'Unsupported columns found: {self.unsupported_columns}')
+
 
     def _generate_column_items(self, count, column_metadata):
         column_name = column_metadata['column'].lower()
