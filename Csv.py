@@ -35,7 +35,7 @@ class Csv():
         file = f'{table_name}.csv'
 
         try:
-            df = pd.read_csv(file)
+            df = pd.read_csv(file, dtype=str)
         except FileNotFoundError:
             with open(file, mode='w', newline='') as f:
                 writer = csv.DictWriter(f, fieldnames=[column_name])

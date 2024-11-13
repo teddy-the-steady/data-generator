@@ -4,6 +4,6 @@ from DataGenerator import DataGenerator
 def run():
     csv = Csv('example.csv')
     dg = DataGenerator(csv)
-    dg.make_insert_queries_for_csv(1000)
+    dg.make_insert_queries_for_tables(10)
     
 run()
