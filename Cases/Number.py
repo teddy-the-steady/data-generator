@@ -24,7 +24,7 @@ class Number(Case):
             length_int = int(self.column_metadata['length'])
             is_char = self.column_metadata['type'].lower() == 'char'
 
-            if 'unique' in self.column_metadata['constraint']:
+            if 'unique' == self.column_metadata['constraint']:
                 result = set()
                 while True:
                     result.add(
