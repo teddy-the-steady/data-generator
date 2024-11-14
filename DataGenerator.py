@@ -18,12 +18,12 @@ class DataGenerator():
         self.unsupported_columns = list()
 
 
-    def make_insert_queries_for_tables(self, count):
+    def make_csv_for_tables(self, count):
         for table_name in self.csv.table_names:
-            self._make_insert_queries_for_table(table_name, count)
+            self._make_data_for_table(table_name, count)
 
 
-    def _make_insert_queries_for_table(self, table_name, count):
+    def _make_data_for_table(self, table_name, count):
         # TODO
         # 1. make sets of each column
         index = Csv.index_of_table(self.csv.tables, table_name)
