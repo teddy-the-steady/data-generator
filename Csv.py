@@ -31,13 +31,11 @@ class Csv():
         return result
 
 
-    def write_results_to_csv(self, table_name, column_name, column_values):
-        file = f'results/{table_name}.csv'
-
+    def write_results_to_csv(self, column_name, column_values, file_path):
         try:
-            df = pd.read_csv(file, dtype=str)
+            df = pd.read_csv(file_path, dtype=str)
         except FileNotFoundError:
-            with open(file, mode='w', newline='') as f:
+            with open(file_path, mode='w', newline='') as f:
                 writer = csv.DictWriter(f, fieldnames=[column_name])
                 writer.writeheader()
 
@@ -45,7 +43,7 @@ class Csv():
 
         df[column_name] = column_values
 
-        df.to_csv(file, index=False)
+        df.to_csv(file_path, index=False)
 
 
     def _set_tables(self, header, table_names):

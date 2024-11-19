@@ -13,6 +13,8 @@ from Cases.Etc import Etc
 
 from Csv import Csv
 
+RESULT_PATH = 'results'
+
 class DataGenerator():
     possible_pair_columns = {}
 
@@ -38,7 +40,11 @@ class DataGenerator():
         for column_metadata in self.csv.tables[index].columns:
             result = self._generate_column_items(count, column_metadata)
 
-            self.csv.write_results_to_csv(table_name, column_metadata['column'], result)
+            self.csv.write_results_to_csv(
+                column_metadata['column'],
+                result,
+                f'{RESULT_PATH}/{table_name}.csv'
+            )
 
         #   a. check format (options, code, hankaku, email? and more)
         #   b. consider length + type
@@ -95,7 +101,7 @@ class DataGenerator():
 
 
     def _prepare_next_file_name(self, table_name):
-        file_paths = glob('results/*.csv')
+        file_paths = glob(f'{RESULT_PATH}/*.csv')
         file_names = [os.path.basename(file) for file in file_paths]
 
         file_name = f'{table_name}.csv'
