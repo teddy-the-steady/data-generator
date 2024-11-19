@@ -32,7 +32,7 @@ class Csv():
 
 
     def write_results_to_csv(self, table_name, column_name, column_values):
-        file = f'{table_name}.csv'
+        file = f'results/{table_name}.csv'
 
         try:
             df = pd.read_csv(file, dtype=str)
