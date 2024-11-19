@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import filedialog
 
 def open_file_dialog():
-    file_path = filedialog.askopenfilename(title="Select a File", filetypes=[("All files", "*.*")])
+    file_path = filedialog.askopenfilename(title="Select a File", filetypes=[("CSV files", "*.csv"), ("All files", "*.*")])
     if file_path:
         selected_file_label.config(text=f"Selected File: {file_path}")
         process_file(file_path)
