@@ -1,3 +1,6 @@
+import os
+from glob import glob
+
 from Cases.Optional import Optional
 from Cases.Name import Name
 from Cases.Address import Address
@@ -22,14 +25,20 @@ class DataGenerator():
         for table_name in self.csv.table_names:
             self._make_data_for_table(table_name, count)
 
+        if len(self.unsupported_columns) > 0:
+            raise Exception(f'Unsupported columns found: {self.unsupported_columns}')
+
 
     def _make_data_for_table(self, table_name, count):
         # TODO
         # 1. make sets of each column
         index = Csv.index_of_table(self.csv.tables, table_name)
+        table_name = self._prepare_next_file_name(table_name)
+
         for column_metadata in self.csv.tables[index].columns:
             result = self._generate_column_items(count, column_metadata)
-            print(column_metadata['column'], result)
+
+            self.csv.write_results_to_csv(table_name, column_metadata['column'], result)
 
         #   a. check format (options, code, hankaku, email? and more)
         #   b. consider length + type
@@ -40,11 +49,6 @@ class DataGenerator():
         # >> after making up all the columns and then give correction
         # >> when insert, consider the order of tables referring and referred
         # 4. export result to csv file
-
-            self.csv.write_results_to_csv(table_name, column_metadata['column'], result)
-
-        if len(self.unsupported_columns) > 0:
-            raise Exception(f'Unsupported columns found: {self.unsupported_columns}')
 
 
     def _generate_column_items(self, count, column_metadata):
@@ -88,3 +92,21 @@ class DataGenerator():
             return result.make_column()
 
         self.unsupported_columns.append(column_metadata['column'])
+
+
+    def _prepare_next_file_name(self, table_name):
+        file_paths = glob('results/*.csv')
+        file_names = [os.path.basename(file) for file in file_paths]
+
+        file_name = f'{table_name}.csv'
+        if file_name not in file_names:
+            return table_name
+
+        sequence = 1
+        file_name = f'{table_name}{sequence}.csv'
+
+        while file_name in file_names:
+            sequence += 1
+            file_name = f'{table_name}{sequence}.csv'
+
+        return f'{table_name}{sequence}'
