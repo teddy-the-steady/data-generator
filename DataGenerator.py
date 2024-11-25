@@ -30,7 +30,7 @@ class DataGenerator():
         # TODO
         # 1. make sets of each column
         index = Csv.index_of_table(self.csv.tables, table_name)
-        table_name = self.csv.prepare_next_file_name(table_name)
+        table_name = Csv.prepare_next_file_name(table_name)
 
         for column_metadata in self.csv.tables[index].columns:
             result = self._generate_column_items(count, column_metadata)

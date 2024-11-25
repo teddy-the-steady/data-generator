@@ -25,15 +25,23 @@ class Csv():
         return index_list[0]
 
 
-    def get_columns(self):
-        result = []
+    @staticmethod
+    def prepare_next_file_name(table_name):
+        file_paths = glob(f'{RESULT_PATH}/*.csv')
+        file_names = [os.path.basename(file) for file in file_paths]
 
-        with open(self.csv_path, 'r') as file:
-            for index, line in enumerate(csv.reader(file)):
-                if index == 0: continue
-                result.append(line)
+        file_name = f'{table_name}.csv'
+        if file_name not in file_names:
+            return table_name
 
-        return result
+        sequence = 1
+        file_name = f'{table_name}{sequence}.csv'
+
+        while file_name in file_names:
+            sequence += 1
+            file_name = f'{table_name}{sequence}.csv'
+
+        return f'{table_name}{sequence}'
 
 
     def write_results_to_csv(self, column_name, column_values, file_name):
@@ -51,24 +59,6 @@ class Csv():
         df[column_name] = column_values
 
         df.to_csv(file_path, index=False)
-
-
-    def prepare_next_file_name(self, table_name):
-        file_paths = glob(f'{RESULT_PATH}/*.csv')
-        file_names = [os.path.basename(file) for file in file_paths]
-
-        file_name = f'{table_name}.csv'
-        if file_name not in file_names:
-            return table_name
-
-        sequence = 1
-        file_name = f'{table_name}{sequence}.csv'
-
-        while file_name in file_names:
-            sequence += 1
-            file_name = f'{table_name}{sequence}.csv'
-
-        return f'{table_name}{sequence}'
 
 
     def _set_tables(self, header, table_names):
@@ -93,7 +83,7 @@ class Csv():
 
 
     def _append_column_metadata(self, header, table_obj_list):
-        for column in self.get_columns():
+        for column in self._get_columns():
             if column[header.index('constraint')] == 'pk':
                 continue
 
@@ -109,6 +99,17 @@ class Csv():
             table_obj_list[index].append_column(dicted_column)
 
         return table_obj_list
+
+
+    def _get_columns(self):
+        result = []
+
+        with open(self.csv_path, 'r') as file:
+            for index, line in enumerate(csv.reader(file)):
+                if index == 0: continue
+                result.append(line)
+
+        return result
 
 
     def _set_header(self):
