@@ -1,6 +1,11 @@
+import os
+from glob import glob
 import csv
 import pandas as pd
+
 from Metadata.Table import Table
+
+RESULT_PATH = 'results' # TODO later change this to Desktop or Download or somewhere else
 
 class Csv():
     def __init__(self, csv_path):
@@ -31,7 +36,9 @@ class Csv():
         return result
 
 
-    def write_results_to_csv(self, column_name, column_values, file_path):
+    def write_results_to_csv(self, column_name, column_values, file_name):
+        file_path = f'{RESULT_PATH}/{file_name}.csv'
+
         try:
             df = pd.read_csv(file_path, dtype=str)
         except FileNotFoundError:
@@ -44,6 +51,24 @@ class Csv():
         df[column_name] = column_values
 
         df.to_csv(file_path, index=False)
+
+
+    def prepare_next_file_name(self, table_name):
+        file_paths = glob(f'{RESULT_PATH}/*.csv')
+        file_names = [os.path.basename(file) for file in file_paths]
+
+        file_name = f'{table_name}.csv'
+        if file_name not in file_names:
+            return table_name
+
+        sequence = 1
+        file_name = f'{table_name}{sequence}.csv'
+
+        while file_name in file_names:
+            sequence += 1
+            file_name = f'{table_name}{sequence}.csv'
+
+        return f'{table_name}{sequence}'
 
 
     def _set_tables(self, header, table_names):
