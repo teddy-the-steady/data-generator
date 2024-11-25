@@ -1,6 +1,3 @@
-import os
-from glob import glob
-
 from Cases.Optional import Optional
 from Cases.Name import Name
 from Cases.Address import Address
@@ -12,8 +9,6 @@ from Cases.Email import Email
 from Cases.Etc import Etc
 
 from Csv import Csv
-
-RESULT_PATH = 'results'
 
 class DataGenerator():
     possible_pair_columns = {}
@@ -35,7 +30,7 @@ class DataGenerator():
         # TODO
         # 1. make sets of each column
         index = Csv.index_of_table(self.csv.tables, table_name)
-        table_name = self._prepare_next_file_name(table_name)
+        table_name = self.csv.prepare_next_file_name(table_name)
 
         for column_metadata in self.csv.tables[index].columns:
             result = self._generate_column_items(count, column_metadata)
@@ -43,7 +38,7 @@ class DataGenerator():
             self.csv.write_results_to_csv(
                 column_metadata['column'],
                 result,
-                f'{RESULT_PATH}/{table_name}.csv'
+                table_name
             )
 
         #   a. check format (options, code, hankaku, email? and more)
@@ -98,21 +93,3 @@ class DataGenerator():
             return result.make_column()
 
         self.unsupported_columns.append(column_metadata['column'])
-
-
-    def _prepare_next_file_name(self, table_name):
-        file_paths = glob(f'{RESULT_PATH}/*.csv')
-        file_names = [os.path.basename(file) for file in file_paths]
-
-        file_name = f'{table_name}.csv'
-        if file_name not in file_names:
-            return table_name
-
-        sequence = 1
-        file_name = f'{table_name}{sequence}.csv'
-
-        while file_name in file_names:
-            sequence += 1
-            file_name = f'{table_name}{sequence}.csv'
-
-        return f'{table_name}{sequence}'
