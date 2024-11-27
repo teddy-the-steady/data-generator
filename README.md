@@ -10,13 +10,27 @@
 
 ```
 $ cd [project dir]
-$ python3 -m venv [new_env_name]
+$ python -m venv [new_env_name]
 ```
 
-2. Activate venv (windows)
+2. Activate venv (windows) or deactivate
+
+bash
 
 ```
-$ .\[new_env_name]\Scripts\activate
+$ . ./[new_env_name]/Scripts/activate
+(new_env_name)$ ls
+(new_env_name)$ deactivate
+$ ls
+```
+
+windows
+
+```
+C:\> .\[new_env_name]\Scripts\activate
+(new_env_name) C:\> ls
+(new_env_name) C:\> deactivate
+C:\> ls
 ```
 
 3. Install packages
