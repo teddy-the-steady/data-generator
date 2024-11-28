@@ -1,4 +1,4 @@
-from Cases.Case import Case
+from cases.Case import Case
 import random
 from datetime import timedelta, datetime
 

@@ -1,6 +1,6 @@
 import random
 import scipy.stats as stats
-from Cases.Case import Case
+from cases.Case import Case
 
 class Number(Case):
 

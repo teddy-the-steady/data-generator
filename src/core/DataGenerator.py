@@ -1,14 +1,14 @@
-from Cases.Optional import Optional
-from Cases.Name import Name
-from Cases.Address import Address
-from Cases.Number import Number
-from Cases.PhoneNumber import PhoneNumber
-from Cases.DateTime import DateTime
-from Cases.Code import Code
-from Cases.Email import Email
-from Cases.Etc import Etc
+from cases.Optional import Optional
+from cases.Name import Name
+from cases.Address import Address
+from cases.Number import Number
+from cases.PhoneNumber import PhoneNumber
+from cases.DateTime import DateTime
+from cases.Code import Code
+from cases.Email import Email
+from cases.Etc import Etc
 
-from Csv import Csv
+from core.Csv import Csv
 
 class DataGenerator():
     possible_pair_columns = {}

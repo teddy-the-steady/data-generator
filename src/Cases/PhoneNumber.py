@@ -1,5 +1,5 @@
 import random
-from Cases.Case import Case
+from cases.Case import Case
 
 class PhoneNumber(Case):
 
