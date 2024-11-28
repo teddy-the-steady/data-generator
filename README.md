@@ -2,7 +2,7 @@
 
 ### developed Python version 3.8.10
 
-#### First setting
+#### Steps to run
 
 ---
 
@@ -56,6 +56,7 @@ departments,id,BIGINT,pk,,
 5. Run python script
 
 ```
+$ cd ./src
 $ python main.py
 ```
 
