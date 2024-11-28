@@ -5,7 +5,7 @@ import pandas as pd
 
 from Metadata.Table import Table
 
-RESULT_PATH = 'results' # TODO later change this to Desktop or Download or somewhere else
+RESULT_PATH = '../results' # TODO later change this to Desktop or Download or somewhere else
 
 class Csv():
     def __init__(self, csv_path):
