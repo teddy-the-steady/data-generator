@@ -45,6 +45,8 @@ $ pip install -r requirements.txt
 table_name,column,type,constraint,length,format
 users,id,BIGINT,pk,,
 users,user_name,CHAR,,20,
+users,gender,CHAR,,1,"['m','f']"
+users,balance,NUMERIC,,"15,2",
 users,created_at,DATE,,,
 users,updated_at,DATE,,,
 users,department_id,BIGINT,fk.departments.id,,
