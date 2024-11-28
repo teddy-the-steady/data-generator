@@ -6,9 +6,12 @@ class Number(Case):
 
     @staticmethod
     def is_number(column_name, column_type):
+        column_name = column_name.lower()
+        column_type = column_type.lower()
+
         ends_with_number = column_name.endswith('number')
         ends_with_no = column_name.endswith('_no')
-        type_numeric = column_type.lower() == 'numeric'
+        type_numeric = column_type == 'numeric'
         return  ends_with_number or ends_with_no or type_numeric
 
 

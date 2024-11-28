@@ -53,42 +53,39 @@ class DataGenerator():
 
 
     def _generate_column_items(self, count, column_metadata):
-        column_name = column_metadata['column'].lower()
-        column_type = column_metadata['type'].lower()
-
         if Optional.has_optional_choice(column_metadata['format']):
             result = Optional(count, column_metadata)
             return result.make_column()
 
-        if Name.is_name(column_name):
+        if Name.is_name(column_metadata['column']):
             result = Name(count, column_metadata)
             return result.make_column()
 
-        if Email.is_email(column_name):
+        if Email.is_email(column_metadata['column']):
             result = Email(count, column_metadata)
             return result.make_column()
 
-        if Address.is_address(column_name):
+        if Address.is_address(column_metadata['column']):
             result = Address(count, column_metadata)
             return result.make_column()
 
-        if DateTime.is_date_or_datetime(column_type):
+        if DateTime.is_date_or_datetime(column_metadata['type']):
             result = DateTime(count, column_metadata)
             return result.make_column()
 
-        if Number.is_number(column_name, column_type):
-            if PhoneNumber.is_phone_number(column_name):
+        if Number.is_number(column_metadata['column'], column_metadata['type']):
+            if PhoneNumber.is_phone_number(column_metadata['column']):
                 result = PhoneNumber(count, column_metadata)
                 return result.make_column()
             else:
                 result = Number(count, column_metadata)
                 return result.make_column()
 
-        if Code.is_code(column_name):
+        if Code.is_code(column_metadata['column']):
             result = Code(count, column_metadata)
             return result.make_column()
 
-        if Etc.is_etc(column_name):
+        if Etc.is_etc(column_metadata['column']):
             result = Etc(count, column_metadata)
             return result.make_column()
 

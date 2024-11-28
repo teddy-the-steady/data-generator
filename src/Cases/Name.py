@@ -6,7 +6,7 @@ class Name(Case):
 
     @staticmethod
     def is_name(column_name):
-        return 'name' in column_name
+        return 'name' in column_name.lower()
 
 
     def make_column(self):

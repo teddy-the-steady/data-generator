@@ -5,7 +5,7 @@ class PhoneNumber(Case):
 
     @staticmethod
     def is_phone_number(column_name):
-        return 'phone_number' in column_name
+        return 'phone_number' in column_name.lower()
 
 
     def make_column(self):

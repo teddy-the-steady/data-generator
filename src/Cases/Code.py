@@ -5,6 +5,7 @@ class Code(Case):
 
     @staticmethod
     def is_code(column_name):
+        column_name = column_name.lower()
         ends_with_code = column_name.endswith('_code')
         ends_with_id = column_name.endswith('_id')
         return ends_with_code or ends_with_id

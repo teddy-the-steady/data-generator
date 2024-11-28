@@ -6,7 +6,7 @@ class Email(Case):
 
     @staticmethod
     def is_email(column_name):
-        return 'email' in column_name
+        return 'email' in column_name.lower()
 
 
     def make_column(self):

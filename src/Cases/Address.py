@@ -5,7 +5,7 @@ class Address(Case):
 
     @staticmethod
     def is_address(column_name):
-        return 'address' in column_name
+        return 'address' in column_name.lower()
 
 
     def make_column(self):
