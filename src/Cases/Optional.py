@@ -12,7 +12,7 @@ class Optional(Case):
     def make_column(self):
         result = list()
 
-        options = [0, 1, 2]
+        options = eval(self.column_metadata['format'])
         for i in range(0, self.count):
             result.append(self._get_random_choice(options))
         return result
