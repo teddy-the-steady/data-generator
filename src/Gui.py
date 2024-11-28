@@ -11,38 +11,40 @@ class Gui(tk.Frame):
         self.master.geometry('300x200')
         self.master.resizable(True, True)
 
-        self.open_button = tk.Button(self.master, text='Open File', command=self.open_file_dialog)
-        self.open_button.pack(padx=20, pady=20)
+        # empty rows
+        self.empty_row0 = tk.Label(self.master, text = '')
+        self.empty_row0.grid(row = 0, column = 0)
 
-        self.open_button = tk.Button(self.master, text='Generate', command=self.gen_data)
-        self.open_button.pack(padx=20, pady=50)
+        self.empty_row2 = tk.Label(self.master, text = '')
+        self.empty_row2.grid(row = 2, column = 0)
 
-        self.selected_file_label = tk.Label(self.master, text='Selected File:')
-        self.selected_file_label.pack()
+        # file row (row=1)
+        self.file_info = tk.Label(self.master, text = 'File:')
+        self.file_entry = tk.Entry(self.master, width = 20)
+        self.open_button = tk.Button(self.master, text='Open', command=self.open_file_dialog)
 
-        self.file_text = tk.Text(self.master, wrap=tk.WORD, height=10, width=40)
-        self.file_text.pack(padx=20, pady=20)
+        self.file_info.grid(row = 1, column = 0)
+        self.file_entry.grid(row = 1, column = 1, sticky=tk.EW)
+        self.open_button.grid(row = 1, column = 2)
+
+        self.master.grid_rowconfigure(1, minsize=10)
+        self.master.grid_columnconfigure(0, pad=30)
+        self.master.grid_columnconfigure(1, weight=1)
+        self.master.grid_columnconfigure(2, pad=30)
+
+        # gen button row (row=3)
+        self.gen_button = tk.Button(self.master, text='Generate', command=self.gen_data)
+        self.gen_button.grid(row = 3, column = 2)
 
 
     def open_file_dialog(self):
         file_path = filedialog.askopenfilename(title='Select a File', filetypes=[('CSV files', '*.csv'), ('All files', '*.*')])
         if file_path:
-            self.selected_file_label.config(text=f'Selected File: {file_path}')
-            self.process_file(file_path)
-
-
-    def process_file(self, file_path):
-        try:
-            with open(file_path, 'r') as file:
-                file_contents = file.read()
-                self.file_text.delete('1.0', tk.END)
-                self.file_text.insert(tk.END, file_contents)
-        except Exception as e:
-            self.selected_file_label.config(text=f'Error: {str(e)}')
+            self.file_entry.insert(tk.END, file_path)
 
 
     def gen_data(self):
-        self.selected_file_label.config(text='Gen btn clicked!')
+        self.file_entry.insert(tk.END, 'Gen btn clicked!')
 
 
 if __name__ == '__main__':
