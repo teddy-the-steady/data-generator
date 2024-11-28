@@ -11,17 +11,17 @@ class Gui(tk.Frame):
         self.master.geometry('300x200')
         self.master.resizable(True, True)
 
-        open_button = tk.Button(self.master, text='Open File', command=self.open_file_dialog)
-        open_button.pack(padx=20, pady=20)
+        self.open_button = tk.Button(self.master, text='Open File', command=self.open_file_dialog)
+        self.open_button.pack(padx=20, pady=20)
 
-        open_button = tk.Button(self.master, text='Generate', command=self.gen_data)
-        open_button.pack(padx=20, pady=50)
+        self.open_button = tk.Button(self.master, text='Generate', command=self.gen_data)
+        self.open_button.pack(padx=20, pady=50)
 
-        selected_file_label = tk.Label(self.master, text='Selected File:')
-        selected_file_label.pack()
+        self.selected_file_label = tk.Label(self.master, text='Selected File:')
+        self.selected_file_label.pack()
 
-        file_text = tk.Text(self.master, wrap=tk.WORD, height=10, width=40)
-        file_text.pack(padx=20, pady=20)
+        self.file_text = tk.Text(self.master, wrap=tk.WORD, height=10, width=40)
+        self.file_text.pack(padx=20, pady=20)
 
 
     def open_file_dialog(self):
