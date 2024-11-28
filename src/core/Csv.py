@@ -3,7 +3,7 @@ from glob import glob
 import csv
 import pandas as pd
 
-from Metadata.Table import Table
+from metadata.Table import Table
 
 RESULT_PATH = '../results' # TODO later change this to Desktop or Download or somewhere else
 

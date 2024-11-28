@@ -1,5 +1,5 @@
 from gimei import Gimei
-from Cases.Case import Case
+from cases.Case import Case
 
 class Address(Case):
 

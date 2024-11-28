@@ -1,6 +1,5 @@
 import random
-from Database import Database
-from Cases.Case import Case
+from cases.Case import Case
 
 class Optional(Case):
 
