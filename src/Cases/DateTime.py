@@ -6,7 +6,7 @@ class DateTime(Case):
 
     @staticmethod
     def is_date_or_datetime(column_type):
-        return column_type in ['date', 'datetime']
+        return column_type.lower() in ['date', 'datetime']
 
 
     def make_column(self):
