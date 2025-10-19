@@ -1,4 +1,3 @@
-from gimei import Gimei
 from cases.Case import Case
 
 class Address(Case):
@@ -9,21 +8,14 @@ class Address(Case):
 
 
     def make_column(self):
-        if self._has_already_made_up_pairs():
-            return self.possible_pair_columns[self._get_column_name_lower()]
+        result = list()
 
-        kanji = list()
-        kana = list()
         for i in range(0, self.count):
-            address = self._get_random_address()
-            kanji.append(address.kanji)
-            address_kana = address.katakana
-            if self._is_hankaku_kana(self.column_metadata['format']):
-                address_kana = self._zen_to_han(address_kana)
-            kana.append(address_kana)
+            result.append(self._get_random_address())
 
-        return self._set_possible_pair_names_and_return(kanji, kana)
+        return list(result)
 
 
     def _get_random_address(self):
-        return Gimei().address
+        # TODO] Returning temporary string
+        return "One Apple Park Way, Cupertino, CA 95014"

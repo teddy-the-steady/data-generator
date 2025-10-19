@@ -1,7 +1,9 @@
 from cases.Optional import Optional
 from cases.Name import Name
 from cases.Address import Address
-from cases.Number import Number
+from cases.Int import Int
+from cases.Decimal import Decimal
+from cases.Year import Year
 from cases.PhoneNumber import PhoneNumber
 from cases.DateTime import DateTime
 from cases.Code import Code
@@ -11,8 +13,6 @@ from cases.Etc import Etc
 from core.Csv import Csv
 
 class DataGenerator():
-    possible_pair_columns = {}
-
     def __init__(self, csv):
         self.csv = csv
         self.unsupported_columns = list()
@@ -73,13 +73,21 @@ class DataGenerator():
             result = DateTime(count, column_metadata)
             return result.make_column()
 
-        if Number.is_number(column_metadata['column'], column_metadata['type']):
-            if PhoneNumber.is_phone_number(column_metadata['column']):
-                result = PhoneNumber(count, column_metadata)
-                return result.make_column()
-            else:
-                result = Number(count, column_metadata)
-                return result.make_column()
+        if PhoneNumber.is_phone_number(column_metadata['column']):
+            result = PhoneNumber(count, column_metadata)
+            return result.make_column()
+
+        if Year.is_year(column_metadata['column']):
+            result = Year(count, column_metadata)
+            return result.make_column()
+
+        if Int.is_int(column_metadata['type']):
+            result = Int(count, column_metadata)
+            return result.make_column()
+
+        if Decimal.is_decimal(column_metadata['type']):
+            result = Decimal(count, column_metadata)
+            return result.make_column()
 
         if Code.is_code(column_metadata['column']):
             result = Code(count, column_metadata)

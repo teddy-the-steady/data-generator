@@ -4,7 +4,7 @@ class Etc(Case):
 
     @staticmethod
     def is_etc(column_name):
-        etc_list = ['business_content', 'comment', 'general_purpose_item_1', 'general_purpose_item_2', 'general_purpose_item_3', 'row_version']
+        etc_list = ['comment', 'row_version']
         return column_name.lower() in etc_list
 
 

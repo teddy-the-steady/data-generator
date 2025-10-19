@@ -47,13 +47,11 @@ class Code(Case):
 
 
     def get_random_post_code(self):
-        first = str(random.randint(100, 999))
-        second = str(random.randint(0, 9999))
-        return f'{first}-{second.zfill(4)}'
+        return str(random.randint(100, 99999)) 
 
 
     def _is_post_code(self):
-        return 'post_code' in self._get_column_name_lower()
+        return ['post', 'postal', 'zip'] in self._get_column_name_lower()
 
 
     def _is_code(self):

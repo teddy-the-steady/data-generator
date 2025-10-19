@@ -11,7 +11,7 @@ class Optional(Case):
     def make_column(self):
         result = list()
 
-        options = eval(self.column_metadata['format'])
+        options = self.parse_list_string(self.column_metadata['format'])
         for i in range(0, self.count):
             result.append(self._get_random_choice(options))
         return result
@@ -20,3 +20,9 @@ class Optional(Case):
     def _get_random_choice(self, options_list):
         return str(random.choice(options_list))
     
+    
+    def parse_list_string(self, stringified_list):
+        s = stringified_list.strip()
+        if s.startswith('[') and s.endswith(']'):
+            s = s[1:-1]
+        return s.split(',')
