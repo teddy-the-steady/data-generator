@@ -1,7 +1,7 @@
 import re
 import random
 import scipy.stats as stats
-from cases.Case import Case
+from pg_data_generator.cases.Case import Case
 
 class Decimal(Case):
 

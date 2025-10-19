@@ -1,5 +1,5 @@
 import random
-from cases.Case import Case
+from pg_data_generator.cases.Case import Case
 
 class Int(Case):
 
