@@ -11,7 +11,7 @@ readme = "README.md"
 requires-python = ">=3.8"
 
 [tool.setuptools.packages.find]
-where = ["pg-data-generator"]
+where = ["pg_data_generator"]
 
 # optional dependencies
 dependencies = [
