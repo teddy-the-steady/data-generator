@@ -6,60 +6,34 @@
 
 ---
 
-1. Setup virtual env (only once)
-
-```
-$ cd [project dir]
-$ python -m venv [new_env_name]
-```
-
-2. Activate venv (windows) or deactivate
-
-bash
-
-```
-$ . ./[new_env_name]/Scripts/activate
-(new_env_name)$ ls
-(new_env_name)$ deactivate
-$ ls
-```
-
-windows
-
-```
-C:\> .\[new_env_name]\Scripts\activate
-(new_env_name) C:\> ls
-(new_env_name) C:\> deactivate
-C:\> ls
-```
-
-3. Install packages
-
-```
-$ pip install -r requirements.txt
-```
-
-4. Prepare Schema file (example.csv)
+1. Prepare Schema file (example.csv)
 
 ```
 table_name,column,type,constraint,length,format
-users,id,BIGINT,pk,,
-users,user_name,CHAR,,20,
-users,gender,CHAR,,1,"['m','f']"
-users,balance,NUMERIC,,"15,2",
-users,created_at,DATE,,,
-users,updated_at,DATE,,,
-users,department_id,BIGINT,fk.departments.id,,
-departments,id,BIGINT,pk,,
+MST_CUSTOMER,id,int,,,
+MST_CUSTOMER,internal_no,int,fk.MST_EXAMPLE.id,,
+MST_CUSTOMER,customer_name,varchar(50),,50,
+MST_CUSTOMER,age,int,,,
+MST_CUSTOMER,gender,char(1),,1,"[m,f,]"
+MST_CUSTOMER,address_code,varchar(4),,4,
+MST_CUSTOMER,email,varchar(50),,,
+MST_CUSTOMER,phone_number,varchar(50),,,
+MST_CUSTOMER,created_at,datetime,,,
+MST_EXAMPLE,id,int,,,
+MST_EXAMPLE,content,varchar(30),,,
+MST_EXAMPLE,trade_start,date,,,
+MST_EXAMPLE,trade_end,date,,,
+MST_EXAMPLE,price,"DECIMAL(15,2)",,,
+MST_EXAMPLE,release_year,int,,,
 ...
 
 ```
 
-5. Run python script
+2. Run python script
 
 ```
 $ cd ./src
 $ python main.py
 ```
 
-6. Check results folder
+3. Check results folder
