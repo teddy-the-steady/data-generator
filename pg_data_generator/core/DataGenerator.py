@@ -10,7 +10,7 @@ from pg_data_generator.cases.Code import Code
 from pg_data_generator.cases.Email import Email
 from pg_data_generator.cases.Etc import Etc
 
-from core.Csv import Csv
+from pg_data_generator.core.Csv import Csv
 
 class DataGenerator():
     def __init__(self, csv):
