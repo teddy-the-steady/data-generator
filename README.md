@@ -1,4 +1,4 @@
-# SQL sever data generator
+# PG data generator
 
 ### developed Python version 3.8.10
 
