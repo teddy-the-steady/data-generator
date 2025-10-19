@@ -5,7 +5,7 @@ class Int(Case):
 
     @staticmethod
     def is_int(column_type):
-        return column_type.lower() in ['int', 'bigint']
+        return column_type.lower() in ['smallint', 'int', 'bigint']
 
 
     def make_column(self):
