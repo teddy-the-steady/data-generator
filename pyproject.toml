@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -9,12 +9,10 @@ description = "data-generator for pg"
 authors = [{name="Taeho Jeon", email="hohoworld11@gmail.com"}]
 readme = "README.md"
 requires-python = ">=3.8"
-
-[tool.setuptools.packages.find]
-where = ["pg_data_generator"]
-
-# optional dependencies
 dependencies = [
     "pandas>=2.0.3",
     "scipy>=1.10.1"
 ]
+
+[tool.setuptools.packages.find]
+where = ["pg_data_generator"]
