@@ -3,7 +3,7 @@ from glob import glob
 import csv
 import pandas as pd
 
-from metadata.Table import Table
+from pg_data_generator.metadata.Table import Table
 
 RESULT_PATH = '.'
 
