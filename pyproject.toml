@@ -10,6 +10,9 @@ authors = [{name="Taeho Jeon", email="hohoworld11@gmail.com"}]
 readme = "README.md"
 requires-python = ">=3.8"
 
+[tool.setuptools.packages.find]
+where = ["pg-data-generator"]
+
 # optional dependencies
 dependencies = [
     "pandas>=2.0.3",
