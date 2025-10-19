@@ -1,5 +1,5 @@
-from core.Csv import Csv
-from core.DataGenerator import DataGenerator
+from pg_data_generator.core.Csv import Csv
+from pg_data_generator.core.DataGenerator import DataGenerator
 
 def run():
     csv = Csv('../example.csv')
