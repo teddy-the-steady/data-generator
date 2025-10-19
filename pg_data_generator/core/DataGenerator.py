@@ -1,14 +1,14 @@
-from cases.Optional import Optional
-from cases.Name import Name
-from cases.Address import Address
-from cases.Int import Int
-from cases.Decimal import Decimal
-from cases.Year import Year
-from cases.PhoneNumber import PhoneNumber
-from cases.DateTime import DateTime
-from cases.Code import Code
-from cases.Email import Email
-from cases.Etc import Etc
+from pg_data_generator.cases.Optional import Optional
+from pg_data_generator.cases.Name import Name
+from pg_data_generator.cases.Address import Address
+from pg_data_generator.cases.Int import Int
+from pg_data_generator.cases.Decimal import Decimal
+from pg_data_generator.cases.Year import Year
+from pg_data_generator.cases.PhoneNumber import PhoneNumber
+from pg_data_generator.cases.DateTime import DateTime
+from pg_data_generator.cases.Code import Code
+from pg_data_generator.cases.Email import Email
+from pg_data_generator.cases.Etc import Etc
 
 from core.Csv import Csv
 
