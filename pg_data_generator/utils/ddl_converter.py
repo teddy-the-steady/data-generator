@@ -238,8 +238,9 @@ def _parse_column_definition(col_def: str) -> Optional[Dict]:
     Returns dict with: name, type, length, is_primary_key, foreign_key
     """
     # Column name and type pattern
+    # Matches: column_name TYPE(params) rest_of_definition
     col_pattern = re.match(
-        r'^\s*([^\s]+)\s+([^\s,]+(?:\([^)]+\))?)(.*)',
+        r'^\s*([^\s]+)\s+([^\s(]+(?:\([^)]+\))?)(.*)',
         col_def,
         re.IGNORECASE
     )
@@ -320,7 +321,8 @@ def write_csv_schema(tables: List[Dict], output_csv_path: str) -> None:
         output_csv_path (str): Path to output CSV file
     """
     with open(output_csv_path, 'w', newline='', encoding='utf-8') as csvfile:
-        writer = csv.writer(csvfile)
+        # Use QUOTE_MINIMAL to avoid quoting DECIMAL types with commas
+        writer = csv.writer(csvfile, quoting=csv.QUOTE_MINIMAL)
 
         # Write header
         writer.writerow(['table_name', 'column', 'type', 'constraint', 'length', 'format'])

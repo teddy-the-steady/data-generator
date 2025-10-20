@@ -37,10 +37,14 @@ class Decimal(Case):
 
 
     def _parse_decimal_type(self, type_str):
+        # Strip quotes if present (CSV may quote fields with commas)
+        type_str = type_str.strip('"').strip("'")
+
+        # Support comma separator (standard SQL format)
         match = re.search(r'DECIMAL\s*\(\s*(\d+)\s*,\s*(\d+)\s*\)', type_str, re.IGNORECASE)
         if match:
             precision = int(match.group(1))
             scale = int(match.group(2))
             return precision, scale
         else:
-            raise ValueError('Wrong decimal format')
+            raise ValueError(f'Wrong decimal format: {type_str}. Expected DECIMAL(precision,scale)')
