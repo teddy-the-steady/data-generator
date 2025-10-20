@@ -10,7 +10,12 @@ class Email(Case):
 
 
     def make_column(self):
-        with open('Cases/username.json', 'r') as file:
+        import os
+        # Get path relative to this file's location
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        username_file = os.path.join(current_dir, 'username.json')
+
+        with open(username_file, 'r') as file:
             data = json.load(file)
         
             result = set()

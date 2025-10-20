@@ -1,5 +1,4 @@
 import re
-import random
 import scipy.stats as stats
 from pg_data_generator.cases.Case import Case
 
@@ -14,7 +13,7 @@ class Decimal(Case):
         result = list()
         splitted = self._parse_decimal_type(self.column_metadata['type'])
 
-        for i in range(0, self.count):
+        for _ in range(0, self.count):
             result.append(self._get_random_number_with_decimal(int(splitted[0]), int(splitted[1])))
         return result
 

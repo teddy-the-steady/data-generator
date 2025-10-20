@@ -12,7 +12,7 @@ class Int(Case):
         length_int = int(self.column_metadata['length'] or 1)
 
         result = list()
-        for i in range(0, self.count):
+        for _ in range(0, self.count):
             result.append(self._get_random_number_lt(length_int))
 
         return result

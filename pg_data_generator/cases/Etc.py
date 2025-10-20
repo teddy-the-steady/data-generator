@@ -10,6 +10,6 @@ class Etc(Case):
 
     def make_column(self):
         result = list()
-        for i in range(0, self.count):
+        for _ in range(0, self.count):
             result.append('')
         return result

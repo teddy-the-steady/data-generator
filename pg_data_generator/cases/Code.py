@@ -26,7 +26,7 @@ class Code(Case):
 
                 result = list()
                 value = self._get_code_starting_from_digit_numbers_of_ten(length_int)
-                for i in range(0, self.count):
+                for _ in range(0, self.count):
                     result.append(str(value))
                     value += 1
                 return result
@@ -36,7 +36,7 @@ class Code(Case):
 
                 result = list()
                 value = 1
-                for i in range(0, self.count):
+                for _ in range(0, self.count):
                     result.append(str(value).zfill(length_int))
                     value += 1
                 return result
@@ -51,7 +51,7 @@ class Code(Case):
 
 
     def _is_post_code(self):
-        return ['post', 'postal', 'zip'] in self._get_column_name_lower()
+        return any(keyword in self._get_column_name_lower() for keyword in ['post', 'postal', 'zip'])
 
 
     def _is_code(self):
