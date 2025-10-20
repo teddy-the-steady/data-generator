@@ -1,3 +1,6 @@
 __pycache__
 .venv
 .python-version
+CLAUDE.md
+test_*
+main_to_run.py
