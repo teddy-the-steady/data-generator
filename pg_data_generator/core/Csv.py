@@ -8,12 +8,17 @@ from pg_data_generator.metadata.Table import Table
 RESULT_PATH = '.'
 
 class Csv():
-    def __init__(self, csv_path):
+    def __init__(self, csv_path, output_dir=None):
         self.csv_path = csv_path
+        self.output_dir = output_dir if output_dir else RESULT_PATH
         self.header = self._set_header()
         self.table_names = self._set_table_names()
         self.tables = self._set_tables(self.header, self.table_names)
         self._set_foreign_keys(self.tables)
+
+        # Create output directory if it doesn't exist
+        if self.output_dir and not os.path.exists(self.output_dir):
+            os.makedirs(self.output_dir)
 
 
     @staticmethod
@@ -25,9 +30,8 @@ class Csv():
         return index_list[0]
 
 
-    @staticmethod
-    def prepare_next_file_name(table_name):
-        file_paths = glob(f'{RESULT_PATH}/*.csv')
+    def prepare_next_file_name(self, table_name):
+        file_paths = glob(f'{self.output_dir}/*.csv')
         file_names = [os.path.basename(file) for file in file_paths]
 
         file_name = f'{table_name}.csv'
@@ -45,7 +49,7 @@ class Csv():
 
 
     def write_results_to_csv(self, column_name, column_values, file_name):
-        file_path = f'{RESULT_PATH}/{file_name}.csv'
+        file_path = os.path.join(self.output_dir, f'{file_name}.csv')
 
         try:
             df = pd.read_csv(file_path, dtype=str)
