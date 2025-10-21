@@ -198,6 +198,46 @@ CREATE TABLE orders (
 
 **All three formats are supported**, but inline `REFERENCES` is the most concise and commonly used in practice.
 
+#### UNIQUE Constraints (Ignored)
+
+UNIQUE constraints are automatically skipped during conversion. They are not enforced during data generation.
+
+```sql
+-- Both formats are recognized and skipped
+CREATE TABLE users (
+    email VARCHAR(100),
+    UNIQUE (email)  -- Skipped
+);
+
+CREATE TABLE users (
+    company_id INT,
+    trade_date DATE,
+    investor_type VARCHAR(20),
+    UNIQUE (company_id, trade_date, investor_type)  -- Multi-column UNIQUE - skipped
+);
+
+CREATE TABLE users (
+    email VARCHAR(100),
+    CONSTRAINT uk_email UNIQUE (email)  -- Named constraint - skipped
+);
+```
+
+#### CHECK Constraints (Ignored)
+
+CHECK constraints are automatically skipped during conversion.
+
+```sql
+CREATE TABLE products (
+    price DECIMAL(10,2),
+    CHECK (price > 0)  -- Skipped
+);
+
+CREATE TABLE products (
+    price DECIMAL(10,2),
+    CONSTRAINT chk_price CHECK (price > 0)  -- Skipped
+);
+```
+
 ### Name Quoting
 Supports various SQL identifier quoting styles:
 ```sql

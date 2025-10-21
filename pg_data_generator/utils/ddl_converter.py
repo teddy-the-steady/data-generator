@@ -10,7 +10,6 @@ import re
 import csv
 import os
 from typing import List, Dict, Optional
-from pathlib import Path
 
 
 def ddl_folder_to_csv(folder_path: str, output_csv_path: str) -> None:
@@ -144,6 +143,18 @@ def parse_ddl_string(ddl_content: str) -> List[Dict]:
                 foreign_keys[fk_col] = (ref_table, ref_col)
                 continue
 
+            # Check for table-level UNIQUE constraint (skip it)
+            unique_match = re.match(r'UNIQUE\s*\(([^)]+)\)', col_def, re.IGNORECASE)
+            if unique_match:
+                # Skip UNIQUE constraints - we don't enforce uniqueness during generation
+                continue
+
+            # Check for table-level CHECK constraint (skip it)
+            check_match = re.match(r'CHECK\s*\(', col_def, re.IGNORECASE)
+            if check_match:
+                # Skip CHECK constraints
+                continue
+
             # Check for CONSTRAINT definitions
             if re.match(r'CONSTRAINT\s+', col_def, re.IGNORECASE):
                 # Extract constraint content
@@ -162,6 +173,18 @@ def parse_ddl_string(ddl_content: str) -> List[Dict]:
                         primary_keys.extend(pk_cols)
                         continue
 
+                    # Check for UNIQUE (skip it)
+                    unique_match = re.match(r'UNIQUE\s*\(([^)]+)\)', constraint_content, re.IGNORECASE)
+                    if unique_match:
+                        # Skip UNIQUE constraints
+                        continue
+
+                    # Check for CHECK (skip it)
+                    check_match = re.match(r'CHECK\s*\(', constraint_content, re.IGNORECASE)
+                    if check_match:
+                        # Skip CHECK constraints
+                        continue
+
                     # Check for FOREIGN KEY
                     fk_match = re.match(
                         r'FOREIGN\s+KEY\s*\(([^)]+)\)\s+REFERENCES\s+([^\s(]+)\s*\(([^)]+)\)',
@@ -174,6 +197,9 @@ def parse_ddl_string(ddl_content: str) -> List[Dict]:
                         ref_col = fk_match.group(3).strip().strip('"').strip('`').strip('[]')
                         foreign_keys[fk_col] = (ref_table, ref_col)
                         continue
+
+                # If it's a CONSTRAINT but not one we recognize, skip it
+                continue
 
             # Parse regular column definition
             column_info = _parse_column_definition(col_def)
