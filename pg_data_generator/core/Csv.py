@@ -88,9 +88,8 @@ class Csv():
 
     def _append_column_metadata(self, header, table_obj_list):
         for column in self._get_columns():
-            if column[header.index('constraint')] == 'pk':
-                continue
-
+            # Note: We now include PK columns - they need to be generated
+            # so that FK columns can reference them
             table_name = ''
             dicted_column = dict()
             for header_item in header:

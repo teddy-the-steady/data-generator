@@ -11,15 +11,22 @@ from pg_data_generator.cases.Email import Email
 from pg_data_generator.cases.Etc import Etc
 
 from pg_data_generator.core.Csv import Csv
+from pg_data_generator.core.Fk_handler import FKHandler
 
 class DataGenerator():
     def __init__(self, csv):
         self.csv = csv
         self.unsupported_columns = list()
+        # Initialize FK handler for enforcing foreign key relationships
+        self.fk_handler = FKHandler(csv.tables, csv.output_dir)
 
 
     def make_csv_for_tables(self, count):
-        for table_name in self.csv.table_names:
+        # Get tables in correct dependency order (FK enforcement)
+        table_order = self.fk_handler.get_table_generation_order()
+        print(f"Table generation order (respecting FK dependencies): {table_order}")
+
+        for table_name in table_order:
             try:
                 print(f"Generating data for table: {table_name}")
                 self._make_data_for_table(table_name, count)
@@ -64,6 +71,23 @@ class DataGenerator():
 
 
     def _generate_column_items(self, count, column_metadata):
+        # Check if this is a PK column - if so, generate sequential unique integers
+        constraint = column_metadata.get('constraint', '')
+        if constraint == 'pk':
+            # Generate sequential integers starting from 1
+            return [str(i) for i in range(1, count + 1)]
+
+        # Check if this is a FK column - if so, get values from referenced table
+        if self.fk_handler.is_fk_column(column_metadata):
+            try:
+                referenced_table, referenced_column = self.fk_handler.parse_fk_constraint(constraint)
+                return self.fk_handler.get_fk_values(referenced_table, referenced_column, count)
+            except Exception as e:
+                raise Exception(
+                    f"FK constraint error for column '{column_metadata['column']}' "
+                    f"(constraint: {constraint}): {str(e)}"
+                )
+
         if Optional.has_optional_choice(column_metadata['format']):
             result = Optional(count, column_metadata)
             return result.make_column()

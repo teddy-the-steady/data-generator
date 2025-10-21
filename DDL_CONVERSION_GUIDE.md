@@ -310,8 +310,10 @@ tables = generate_data(
 
 ## Limitations
 
-- **FK Enforcement**: Foreign key relationships are captured in the CSV but not yet enforced during data generation. FK columns receive independent random data.
-- **Unique Constraints**: UNIQUE constraints are parsed but not enforced.
+- **FK Enforcement**: ✅ **FULLY IMPLEMENTED** - Foreign key relationships are now enforced! Tables are generated in dependency order and FK values are guaranteed to exist in referenced tables.
+  - ⚠️ Self-referencing FKs not yet supported
+  - ⚠️ Circular FK dependencies will error (by design)
+- **Unique Constraints**: UNIQUE constraints are parsed but not enforced during data generation.
 - **Check Constraints**: CHECK constraints are not supported.
 - **Default Values**: DEFAULT values are not captured.
 - **Complex Types**: Arrays, JSON, and custom types are not supported.
