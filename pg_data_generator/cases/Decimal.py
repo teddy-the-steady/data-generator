@@ -1,5 +1,4 @@
 import re
-import scipy.stats as stats
 from pg_data_generator.cases.Case import Case
 
 class Decimal(Case):
@@ -11,29 +10,43 @@ class Decimal(Case):
 
     def make_column(self):
         result = list()
-        splitted = self._parse_decimal_type(self.column_metadata['type'])
+        try:
+            splitted = self._parse_decimal_type(self.column_metadata['type'])
+            precision = int(splitted[0])
+            scale = int(splitted[1])
+        except Exception as e:
+            raise ValueError(
+                f"Error parsing DECIMAL type for column '{self.column_metadata.get('column', 'unknown')}': "
+                f"type='{self.column_metadata['type']}'. {str(e)}"
+            )
 
         for _ in range(0, self.count):
-            result.append(self._get_random_number_with_decimal(int(splitted[0]), int(splitted[1])))
+            result.append(self._get_random_number_with_decimal(precision, scale))
         return result
 
 
-    def _get_random_number_with_decimal(self, length, digits):
-        a = 1  # Skewness parameter
-        loc = 0  # Location parameter
-        scale = 1e9  # Scale parameter (when it comes to money, 1e9 gives billions)
+    def _get_random_number_with_decimal(self, precision, scale):
+        """
+        Generate a random decimal number.
 
-        skewnorm_dist = stats.skewnorm(a, loc, scale)
+        Args:
+            precision: Total number of digits (e.g., 15 for DECIMAL(15,2))
+            scale: Number of digits after decimal point (e.g., 2 for DECIMAL(15,2))
+        """
+        import random
 
-        num_samples = 1
-        random_values = skewnorm_dist.rvs(num_samples)
+        # Calculate max value based on precision and scale
+        # For DECIMAL(15,2): max integer part is 13 digits, max value is 9999999999999.99
+        max_integer_digits = precision - scale
+        max_value = (10 ** max_integer_digits) - 1
 
-        filtered_value = [
-            round(abs(value), digits) for value in random_values
-            if value < 10 ** (length - 1)
-        ]
+        # Generate random value between 0 and max_value
+        integer_part = random.uniform(0, max_value)
 
-        return str(filtered_value[0])
+        # Round to the specified scale
+        result = round(integer_part, scale)
+
+        return str(result)
 
 
     def _parse_decimal_type(self, type_str):

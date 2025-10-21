@@ -20,7 +20,11 @@ class DataGenerator():
 
     def make_csv_for_tables(self, count):
         for table_name in self.csv.table_names:
-            self._make_data_for_table(table_name, count)
+            try:
+                print(f"Generating data for table: {table_name}")
+                self._make_data_for_table(table_name, count)
+            except Exception as e:
+                raise Exception(f"Error generating data for table '{table_name}': {str(e)}") from e
 
         if len(self.unsupported_columns) > 0:
             raise Exception(f'Unsupported columns found: {self.unsupported_columns}')
@@ -30,16 +34,23 @@ class DataGenerator():
         # TODO
         # 1. make sets of each column
         index = Csv.index_of_table(self.csv.tables, table_name)
+        original_table_name = table_name
         table_name = self.csv.prepare_next_file_name(table_name)
 
         for column_metadata in self.csv.tables[index].columns:
-            result = self._generate_column_items(count, column_metadata)
+            try:
+                result = self._generate_column_items(count, column_metadata)
 
-            self.csv.write_results_to_csv(
-                column_metadata['column'],
-                result,
-                table_name
-            )
+                self.csv.write_results_to_csv(
+                    column_metadata['column'],
+                    result,
+                    table_name
+                )
+            except Exception as e:
+                raise Exception(
+                    f"Error generating column '{column_metadata['column']}' "
+                    f"(type: {column_metadata.get('type', 'unknown')}): {str(e)}"
+                ) from e
 
         #   a. check format (options, code, hankaku, email? and more)
         #   b. consider length + type

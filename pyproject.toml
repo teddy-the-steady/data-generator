@@ -10,8 +10,7 @@ authors = [{ name = "Taeho Jeon", email = "hohoworld11@gmail.com" }]
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
-    "pandas>=2.0.3",
-    "scipy>=1.10.1"
+    "pandas>=2.0.3"
 ]
 
 [tool.setuptools.packages.find]
