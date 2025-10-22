@@ -344,8 +344,23 @@ def write_csv_schema(tables: List[Dict], output_csv_path: str) -> None:
 
     Args:
         tables (List[Dict]): List of table definitions from parse_ddl_*
-        output_csv_path (str): Path to output CSV file
+        output_csv_path (str): Path to output CSV file. If this is a directory,
+                              'schema.csv' will be created in that directory.
+
+    Note:
+        If output_csv_path is a directory, the file will be saved as 'schema.csv'
+        in that directory.
     """
+    # If output_csv_path is an existing directory, create schema.csv in it
+    if os.path.exists(output_csv_path) and os.path.isdir(output_csv_path):
+        output_csv_path = os.path.join(output_csv_path, 'schema.csv')
+        print(f"Output path is a directory. Creating schema file: {output_csv_path}")
+
+    # Ensure parent directory exists
+    output_dir = os.path.dirname(output_csv_path)
+    if output_dir and not os.path.exists(output_dir):
+        os.makedirs(output_dir, exist_ok=True)
+
     with open(output_csv_path, 'w', newline='', encoding='utf-8') as csvfile:
         # Use QUOTE_MINIMAL to avoid quoting DECIMAL types with commas
         writer = csv.writer(csvfile, quoting=csv.QUOTE_MINIMAL)
