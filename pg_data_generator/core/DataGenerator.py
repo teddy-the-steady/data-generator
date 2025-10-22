@@ -8,6 +8,7 @@ from pg_data_generator.cases.PhoneNumber import PhoneNumber
 from pg_data_generator.cases.DateTime import DateTime
 from pg_data_generator.cases.Code import Code
 from pg_data_generator.cases.Email import Email
+from pg_data_generator.cases.Varchar import Varchar
 from pg_data_generator.cases.Etc import Etc
 
 from pg_data_generator.core.Csv import Csv
@@ -126,6 +127,10 @@ class DataGenerator():
 
         if Code.is_code(column_metadata['column']):
             result = Code(count, column_metadata)
+            return result.make_column()
+
+        if Varchar.is_varchar(column_metadata['type']):
+            result = Varchar(count, column_metadata)
             return result.make_column()
 
         if Etc.is_etc(column_metadata['column']):

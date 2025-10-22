@@ -12,6 +12,11 @@ from pg_data_generator.utils.ddl_converter import (
     ddl_folder_to_csv,
     ddl_string_to_csv
 )
+from pg_data_generator.utils.dml_converter import (
+    csv_to_dml,
+    csv_folder_to_dml,
+    generate_dml_from_data_folder
+)
 
 
 def generate_data(schema_csv_path, row_count=10, output_dir=None):
@@ -109,12 +114,101 @@ def generate_data_from_ddl_folder(ddl_folder_path, output_data_dir, row_count=10
     return tables, schema_csv_path
 
 
+def generate_data_with_dml(schema_csv_path, row_count=10, output_dir=None,
+                           dml_output_dir=None, batch_size=100):
+    """
+    Generate synthetic data and convert it to SQL INSERT statements.
+
+    This function:
+    1. Generates CSV data files from schema
+    2. Converts CSV files to SQL INSERT statements (DML)
+
+    Args:
+        schema_csv_path (str): Path to the CSV schema file
+        row_count (int): Number of rows to generate for each table (default: 10)
+        output_dir (str): Directory for CSV output files (default: current directory)
+        dml_output_dir (str): Directory for SQL DML files. If None, uses output_dir/sql (default: None)
+        batch_size (int): Number of rows per INSERT statement (default: 100)
+
+    Returns:
+        dict: Dictionary with keys 'csv_files' (list of CSV paths) and 'dml_files' (list of SQL paths)
+
+    Example:
+        >>> from pg_data_generator.main import generate_data_with_dml
+        >>> result = generate_data_with_dml(
+        ...     'schema.csv',
+        ...     row_count=100,
+        ...     output_dir='./data',
+        ...     dml_output_dir='./sql'
+        ... )
+        >>> print(f"Generated {len(result['dml_files'])} SQL files")
+    """
+    import os
+
+    # Generate CSV data
+    print(f"Generating {row_count} rows per table...")
+    tables = generate_data(schema_csv_path, row_count=row_count, output_dir=output_dir)
+
+    # Determine DML output directory
+    if dml_output_dir is None:
+        csv_dir = output_dir if output_dir else '.'
+        dml_output_dir = os.path.join(csv_dir, 'sql')
+
+    # Convert CSV to DML
+    print(f"\nConverting CSV data to SQL INSERT statements...")
+    csv_dir = output_dir if output_dir else '.'
+    dml_files = csv_folder_to_dml(
+        csv_folder_path=csv_dir,
+        output_folder_path=dml_output_dir,
+        schema_csv_path=schema_csv_path,
+        batch_size=batch_size
+    )
+
+    return {
+        'tables': tables,
+        'dml_files': dml_files
+    }
+
+
+def generate_dml_from_csv_folder(csv_folder_path, output_dml_folder,
+                                 schema_csv_path=None, batch_size=100):
+    """
+    Convert existing CSV data files to SQL INSERT statements.
+
+    Use this when you already have generated CSV files and want to create DML files.
+
+    Args:
+        csv_folder_path (str): Path to folder containing CSV data files
+        output_dml_folder (str): Path to folder for SQL DML output files
+        schema_csv_path (str): Optional path to schema.csv for type information (default: None)
+        batch_size (int): Number of rows per INSERT statement (default: 100)
+
+    Returns:
+        list: List of generated SQL file paths
+
+    Example:
+        >>> from pg_data_generator.main import generate_dml_from_csv_folder
+        >>> dml_files = generate_dml_from_csv_folder(
+        ...     csv_folder_path='./data',
+        ...     output_dml_folder='./sql',
+        ...     schema_csv_path='./data/schema.csv'
+        ... )
+        >>> print(f"Generated {len(dml_files)} DML files")
+    """
+    return csv_folder_to_dml(csv_folder_path, output_dml_folder, schema_csv_path, batch_size)
+
+
 # Re-export converter functions for convenience
 __all__ = [
     'generate_data',
     'generate_data_from_schema',
     'generate_data_from_ddl_folder',
+    'generate_data_with_dml',
+    'generate_dml_from_csv_folder',
     'ddl_to_csv',
     'ddl_folder_to_csv',
-    'ddl_string_to_csv'
+    'ddl_string_to_csv',
+    'csv_to_dml',
+    'csv_folder_to_dml',
+    'generate_dml_from_data_folder'
 ]
