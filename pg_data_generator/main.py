@@ -14,8 +14,7 @@ from pg_data_generator.utils.ddl_converter import (
 )
 from pg_data_generator.utils.dml_converter import (
     csv_to_dml,
-    csv_folder_to_dml,
-    generate_dml_from_data_folder
+    csv_folder_to_dml
 )
 
 
@@ -44,24 +43,6 @@ def generate_data(schema_csv_path, row_count=10, output_dir=None):
     dg = DataGenerator(csv)
     dg.make_csv_for_tables(row_count)
     return csv.table_names
-
-
-def generate_data_from_schema(schema_csv_path, output_dir, row_count=10):
-    """
-    Generate synthetic data with explicit output directory.
-
-    This is an alias for generate_data() with more explicit parameter ordering
-    for external repository usage.
-
-    Args:
-        schema_csv_path (str): Path to the CSV schema file
-        output_dir (str): Directory where output CSV files will be saved
-        row_count (int): Number of rows to generate for each table (default: 10)
-
-    Returns:
-        list: List of generated table names
-    """
-    return generate_data(schema_csv_path, row_count=row_count, output_dir=output_dir)
 
 
 def generate_data_from_ddl_folder(ddl_folder_path, output_data_dir, row_count=10, schema_csv_path=None):
@@ -170,45 +151,185 @@ def generate_data_with_dml(schema_csv_path, row_count=10, output_dir=None,
     }
 
 
-def generate_dml_from_csv_folder(csv_folder_path, output_dml_folder,
-                                 schema_csv_path=None, batch_size=100):
+def generate_dml_from_ddl_folder(ddl_folder_path, output_dml_dir, row_count=10,
+                                  temp_data_dir=None, batch_size=100, keep_temp_files=False):
     """
-    Convert existing CSV data files to SQL INSERT statements.
+    Convert DDL files (CREATE TABLE) directly to DML files (INSERT statements).
 
-    Use this when you already have generated CSV files and want to create DML files.
+    This is a complete end-to-end function that:
+    1. Parses DDL files (.sql) from the folder
+    2. Generates a temporary CSV schema
+    3. Generates synthetic data as CSV files
+    4. Converts CSV data to SQL INSERT statements
+    5. Optionally cleans up temporary files
 
     Args:
-        csv_folder_path (str): Path to folder containing CSV data files
-        output_dml_folder (str): Path to folder for SQL DML output files
-        schema_csv_path (str): Optional path to schema.csv for type information (default: None)
+        ddl_folder_path (str): Path to folder containing .sql DDL files
+        output_dml_dir (str): Directory where SQL INSERT files will be saved
+        row_count (int): Number of rows to generate for each table (default: 10)
+        temp_data_dir (str): Directory for temporary CSV files. If None, uses a temp dir (default: None)
         batch_size (int): Number of rows per INSERT statement (default: 100)
+        keep_temp_files (bool): If True, keeps temporary CSV files. If False, deletes them (default: False)
 
     Returns:
-        list: List of generated SQL file paths
+        dict: Dictionary with:
+              - 'dml_files': List of generated SQL file paths
+              - 'tables': List of table names
+              - 'schema_path': Path to the schema CSV file (if kept)
+              - 'data_dir': Path to the data directory (if kept)
 
     Example:
-        >>> from pg_data_generator.main import generate_dml_from_csv_folder
-        >>> dml_files = generate_dml_from_csv_folder(
-        ...     csv_folder_path='./data',
-        ...     output_dml_folder='./sql',
-        ...     schema_csv_path='./data/schema.csv'
+        >>> from pg_data_generator.main import generate_dml_from_ddl_folder
+        >>> result = generate_dml_from_ddl_folder(
+        ...     ddl_folder_path='./sql_schemas',
+        ...     output_dml_dir='./insert_statements',
+        ...     row_count=100,
+        ...     batch_size=50
         ... )
-        >>> print(f"Generated {len(dml_files)} DML files")
+        >>> print(f"Generated {len(result['dml_files'])} SQL INSERT files")
+        >>> print(f"Tables: {result['tables']}")
     """
-    return csv_folder_to_dml(csv_folder_path, output_dml_folder, schema_csv_path, batch_size)
+    import os
+    import shutil
+    import tempfile
+
+    # Create output directory if it doesn't exist
+    if not os.path.exists(output_dml_dir):
+        os.makedirs(output_dml_dir)
+
+    # Determine temporary data directory
+    use_temp_dir = temp_data_dir is None
+    if use_temp_dir:
+        temp_data_dir = tempfile.mkdtemp(prefix='pg_data_gen_')
+        print(f"Using temporary directory: {temp_data_dir}")
+    else:
+        if not os.path.exists(temp_data_dir):
+            os.makedirs(temp_data_dir)
+
+    try:
+        # Step 1: Convert DDL to CSV schema and generate data
+        print(f"Step 1/3: Converting DDL files and generating data...")
+        tables, schema_csv_path = generate_data_from_ddl_folder(
+            ddl_folder_path=ddl_folder_path,
+            output_data_dir=temp_data_dir,
+            row_count=row_count
+        )
+
+        # Step 2: Convert CSV data to DML
+        print(f"\nStep 2/3: Converting CSV data to SQL INSERT statements...")
+        dml_files = csv_folder_to_dml(
+            csv_folder_path=temp_data_dir,
+            output_folder_path=output_dml_dir,
+            schema_csv_path=schema_csv_path,
+            batch_size=batch_size
+        )
+
+        # Step 3: Cleanup or keep files
+        print(f"\nStep 3/3: Finalizing...")
+        result = {
+            'dml_files': dml_files,
+            'tables': tables
+        }
+
+        if keep_temp_files:
+            result['schema_path'] = schema_csv_path
+            result['data_dir'] = temp_data_dir
+            print(f"Kept temporary files in: {temp_data_dir}")
+        else:
+            if use_temp_dir:
+                shutil.rmtree(temp_data_dir)
+                print(f"Cleaned up temporary files")
+            else:
+                print(f"Temporary files kept in: {temp_data_dir}")
+
+        print(f"\n✓ Successfully generated {len(dml_files)} DML file(s) for {len(tables)} table(s)")
+        return result
+
+    except Exception as e:
+        # Clean up on error if we created a temp dir
+        if use_temp_dir and not keep_temp_files and os.path.exists(temp_data_dir):
+            shutil.rmtree(temp_data_dir)
+        raise e
 
 
-# Re-export converter functions for convenience
+def ddl_to_dml(ddl_file_path, output_dml_dir, row_count=10, batch_size=100, keep_temp_files=False):
+    """
+    Convert a single DDL file directly to DML INSERT statements.
+
+    This function:
+    1. Parses the DDL file containing CREATE TABLE statements
+    2. Generates synthetic data based on the schema
+    3. Converts the data to SQL INSERT statements
+
+    Args:
+        ddl_file_path (str): Path to the SQL/DDL file with CREATE TABLE statements
+        output_dml_dir (str): Directory where SQL INSERT files will be saved
+        row_count (int): Number of rows to generate for each table (default: 10)
+        batch_size (int): Number of rows per INSERT statement (default: 100)
+        keep_temp_files (bool): If True, keeps temporary CSV files (default: False)
+
+    Returns:
+        dict: Dictionary with:
+              - 'dml_files': List of generated SQL file paths
+              - 'tables': List of table names
+              - 'schema_path': Path to the schema CSV (if kept)
+              - 'data_dir': Path to the data directory (if kept)
+
+    Example:
+        >>> from pg_data_generator.main import ddl_to_dml
+        >>> result = ddl_to_dml(
+        ...     ddl_file_path='./schema.sql',
+        ...     output_dml_dir='./insert_statements',
+        ...     row_count=100
+        ... )
+        >>> print(f"Generated {len(result['dml_files'])} INSERT files")
+    """
+    import os
+    import tempfile
+    import shutil
+
+    # Create a temporary folder with just this DDL file
+    temp_ddl_dir = tempfile.mkdtemp(prefix='pg_ddl_')
+    try:
+        # Copy DDL file to temp directory
+        ddl_filename = os.path.basename(ddl_file_path)
+        temp_ddl_path = os.path.join(temp_ddl_dir, ddl_filename)
+        shutil.copy2(ddl_file_path, temp_ddl_path)
+
+        # Use the folder-based function
+        result = generate_dml_from_ddl_folder(
+            ddl_folder_path=temp_ddl_dir,
+            output_dml_dir=output_dml_dir,
+            row_count=row_count,
+            batch_size=batch_size,
+            keep_temp_files=keep_temp_files
+        )
+
+        return result
+
+    finally:
+        # Clean up temporary DDL directory
+        if os.path.exists(temp_ddl_dir):
+            shutil.rmtree(temp_ddl_dir)
+
+
+# Public API exports
 __all__ = [
+    # Core data generation functions
     'generate_data',
-    'generate_data_from_schema',
     'generate_data_from_ddl_folder',
     'generate_data_with_dml',
-    'generate_dml_from_csv_folder',
+
+    # DDL to DML conversion (CREATE to INSERT)
+    'generate_dml_from_ddl_folder',
+    'ddl_to_dml',
+
+    # DDL to CSV schema conversion
     'ddl_to_csv',
     'ddl_folder_to_csv',
     'ddl_string_to_csv',
+
+    # CSV to DML conversion
     'csv_to_dml',
     'csv_folder_to_dml',
-    'generate_dml_from_data_folder'
 ]
