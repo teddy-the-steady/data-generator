@@ -1,11 +1,3 @@
-"""
-DDL to CSV Schema Converter
-
-This module converts PostgreSQL DDL (CREATE TABLE) statements into CSV schema files
-that can be used by the pg-data-generator. Supports parsing multiple .sql files from
-a directory and merging them into a single CSV with FK relationships.
-"""
-
 import re
 import csv
 import os
@@ -13,23 +5,6 @@ from typing import List, Dict, Optional
 
 
 def ddl_folder_to_csv(folder_path: str, output_csv_path: str) -> None:
-    """
-    Convert all DDL files in a folder to a single CSV schema file.
-
-    This function:
-    1. Finds all .sql files in the specified folder
-    2. Parses CREATE TABLE statements from each file
-    3. Merges all tables into a single CSV with FK relationships preserved
-
-    Args:
-        folder_path (str): Path to folder containing .sql files
-        output_csv_path (str): Path to output CSV file
-
-    Example:
-        >>> ddl_folder_to_csv('./sql_schemas', 'schema.csv')
-        >>> # Parses all .sql files and creates schema.csv
-    """
-    # Find all .sql files in folder
     sql_files = []
     for file in os.listdir(folder_path):
         if file.endswith('.sql'):
@@ -42,7 +17,6 @@ def ddl_folder_to_csv(folder_path: str, output_csv_path: str) -> None:
     for sql_file in sql_files:
         print(f"  - {os.path.basename(sql_file)}")
 
-    # Parse all DDL files
     all_tables = []
     for sql_file in sql_files:
         tables = parse_ddl_file(sql_file)
@@ -50,25 +24,11 @@ def ddl_folder_to_csv(folder_path: str, output_csv_path: str) -> None:
 
     print(f"\nParsed {len(all_tables)} table(s)")
 
-    # Write to CSV
     write_csv_schema(all_tables, output_csv_path)
     print(f"Successfully created: {output_csv_path}")
 
 
 def parse_ddl_file(ddl_file_path: str) -> List[Dict]:
-    """
-    Parse a single SQL file containing CREATE TABLE statements.
-
-    Args:
-        ddl_file_path (str): Path to the SQL/DDL file
-
-    Returns:
-        List[Dict]: List of table definitions with columns and constraints
-
-    Example:
-        >>> tables = parse_ddl_file('schema.sql')
-        >>> print(f"Found {len(tables)} tables")
-    """
     with open(ddl_file_path, 'r', encoding='utf-8') as f:
         ddl_content = f.read()
 
@@ -76,29 +36,11 @@ def parse_ddl_file(ddl_file_path: str) -> List[Dict]:
 
 
 def parse_ddl_string(ddl_content: str) -> List[Dict]:
-    """
-    Parse DDL string containing CREATE TABLE statements.
-
-    Args:
-        ddl_content (str): DDL string with CREATE TABLE statements
-
-    Returns:
-        List[Dict]: List of table definitions
-
-    Supports:
-        - PRIMARY KEY constraints (both inline and table-level)
-        - FOREIGN KEY constraints (both inline and table-level)
-        - Column types: INT, BIGINT, SMALLINT, VARCHAR, CHAR, DATE, DATETIME, TIMESTAMP, DECIMAL, etc.
-        - NOT NULL constraints (ignored for data generation)
-        - UNIQUE constraints (ignored for data generation)
-    """
     tables = []
 
-    # Remove comments
     ddl_content = re.sub(r'--[^\n]*', '', ddl_content)
     ddl_content = re.sub(r'/\*.*?\*/', '', ddl_content, flags=re.DOTALL)
 
-    # Find all CREATE TABLE statements
     create_table_pattern = re.compile(
         r'CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?([^\s(]+)\s*\((.*?)\);',
         re.IGNORECASE | re.DOTALL
@@ -114,7 +56,6 @@ def parse_ddl_string(ddl_content: str) -> List[Dict]:
             'foreign_keys': {}
         }
 
-        # Split column definitions (handling commas within parentheses)
         column_defs = _split_column_definitions(columns_def)
 
         primary_keys = []
@@ -123,14 +64,12 @@ def parse_ddl_string(ddl_content: str) -> List[Dict]:
         for col_def in column_defs:
             col_def = col_def.strip()
 
-            # Check for table-level PRIMARY KEY constraint
             pk_match = re.match(r'PRIMARY\s+KEY\s*\(([^)]+)\)', col_def, re.IGNORECASE)
             if pk_match:
                 pk_cols = [c.strip().strip('"').strip('`').strip('[]') for c in pk_match.group(1).split(',')]
                 primary_keys.extend(pk_cols)
                 continue
 
-            # Check for table-level FOREIGN KEY constraint
             fk_match = re.match(
                 r'FOREIGN\s+KEY\s*\(([^)]+)\)\s+REFERENCES\s+([^\s(]+)\s*\(([^)]+)\)',
                 col_def,
@@ -143,21 +82,17 @@ def parse_ddl_string(ddl_content: str) -> List[Dict]:
                 foreign_keys[fk_col] = (ref_table, ref_col)
                 continue
 
-            # Check for table-level UNIQUE constraint (skip it)
             unique_match = re.match(r'UNIQUE\s*\(([^)]+)\)', col_def, re.IGNORECASE)
             if unique_match:
                 # Skip UNIQUE constraints - we don't enforce uniqueness during generation
                 continue
 
-            # Check for table-level CHECK constraint (skip it)
             check_match = re.match(r'CHECK\s*\(', col_def, re.IGNORECASE)
             if check_match:
                 # Skip CHECK constraints
                 continue
 
-            # Check for CONSTRAINT definitions
             if re.match(r'CONSTRAINT\s+', col_def, re.IGNORECASE):
-                # Extract constraint content
                 constraint_match = re.match(
                     r'CONSTRAINT\s+\S+\s+(.*)',
                     col_def,
@@ -166,26 +101,22 @@ def parse_ddl_string(ddl_content: str) -> List[Dict]:
                 if constraint_match:
                     constraint_content = constraint_match.group(1)
 
-                    # Check for PRIMARY KEY
                     pk_match = re.match(r'PRIMARY\s+KEY\s*\(([^)]+)\)', constraint_content, re.IGNORECASE)
                     if pk_match:
                         pk_cols = [c.strip().strip('"').strip('`').strip('[]') for c in pk_match.group(1).split(',')]
                         primary_keys.extend(pk_cols)
                         continue
 
-                    # Check for UNIQUE (skip it)
                     unique_match = re.match(r'UNIQUE\s*\(([^)]+)\)', constraint_content, re.IGNORECASE)
                     if unique_match:
                         # Skip UNIQUE constraints
                         continue
 
-                    # Check for CHECK (skip it)
                     check_match = re.match(r'CHECK\s*\(', constraint_content, re.IGNORECASE)
                     if check_match:
                         # Skip CHECK constraints
                         continue
 
-                    # Check for FOREIGN KEY
                     fk_match = re.match(
                         r'FOREIGN\s+KEY\s*\(([^)]+)\)\s+REFERENCES\s+([^\s(]+)\s*\(([^)]+)\)',
                         constraint_content,
@@ -201,26 +132,21 @@ def parse_ddl_string(ddl_content: str) -> List[Dict]:
                 # If it's a CONSTRAINT but not one we recognize, skip it
                 continue
 
-            # Parse regular column definition
             column_info = _parse_column_definition(col_def)
             if column_info:
-                # Check for inline PRIMARY KEY
                 if column_info.get('is_primary_key'):
                     primary_keys.append(column_info['name'])
 
-                # Check for inline FOREIGN KEY
                 if column_info.get('foreign_key'):
                     fk_table, fk_col = column_info['foreign_key']
                     foreign_keys[column_info['name']] = (fk_table, fk_col)
 
                 table_info['columns'].append(column_info)
 
-        # Mark primary key columns
         for col in table_info['columns']:
             if col['name'] in primary_keys:
                 col['is_primary_key'] = True
 
-        # Add foreign key info to columns
         for col in table_info['columns']:
             if col['name'] in foreign_keys:
                 ref_table, ref_col = foreign_keys[col['name']]
@@ -233,7 +159,6 @@ def parse_ddl_string(ddl_content: str) -> List[Dict]:
 
 
 def _split_column_definitions(columns_def: str) -> List[str]:
-    """Split column definitions handling nested parentheses."""
     parts = []
     current = []
     paren_depth = 0
@@ -258,13 +183,6 @@ def _split_column_definitions(columns_def: str) -> List[str]:
 
 
 def _parse_column_definition(col_def: str) -> Optional[Dict]:
-    """
-    Parse a single column definition.
-
-    Returns dict with: name, type, length, is_primary_key, foreign_key
-    """
-    # Column name and type pattern
-    # Matches: column_name TYPE(params) rest_of_definition
     col_pattern = re.match(
         r'^\s*([^\s]+)\s+([^\s(]+(?:\([^)]+\))?)(.*)',
         col_def,
@@ -278,7 +196,6 @@ def _parse_column_definition(col_def: str) -> Optional[Dict]:
     col_type = col_pattern.group(2).strip().upper()
     col_constraints = col_pattern.group(3).strip()
 
-    # Parse type and length
     type_match = re.match(r'([^\(]+)(?:\((\d+)(?:,\s*(\d+))?\))?', col_type)
     if not type_match:
         return None
@@ -287,7 +204,6 @@ def _parse_column_definition(col_def: str) -> Optional[Dict]:
     length = type_match.group(2)
     precision = type_match.group(3)  # For DECIMAL(15,2)
 
-    # Reconstruct full type for DECIMAL
     if precision:
         full_type = f"{base_type}({length},{precision})"
     elif length and base_type not in ['INT', 'BIGINT', 'SMALLINT', 'DATE', 'DATETIME', 'TIMESTAMP']:
@@ -295,10 +211,8 @@ def _parse_column_definition(col_def: str) -> Optional[Dict]:
     else:
         full_type = base_type
 
-    # Check for PRIMARY KEY constraint
     is_primary_key = bool(re.search(r'PRIMARY\s+KEY', col_constraints, re.IGNORECASE))
 
-    # Check for inline FOREIGN KEY
     foreign_key = None
     fk_match = re.search(
         r'REFERENCES\s+([^\s(]+)\s*\(([^)]+)\)',
@@ -320,43 +234,15 @@ def _parse_column_definition(col_def: str) -> Optional[Dict]:
 
 
 def ddl_to_csv(ddl_file_path: str, output_csv_path: str) -> None:
-    """
-    Convert a single DDL file to CSV schema format.
-
-    Args:
-        ddl_file_path (str): Path to input SQL/DDL file
-        output_csv_path (str): Path to output CSV file
-
-    CSV Format:
-        table_name,column,type,constraint,length,format
-
-    Example:
-        >>> ddl_to_csv('schema.sql', 'schema.csv')
-        >>> # Creates schema.csv ready for data generation
-    """
     tables = parse_ddl_file(ddl_file_path)
     write_csv_schema(tables, output_csv_path)
 
 
 def write_csv_schema(tables: List[Dict], output_csv_path: str) -> None:
-    """
-    Write parsed table definitions to CSV schema file.
-
-    Args:
-        tables (List[Dict]): List of table definitions from parse_ddl_*
-        output_csv_path (str): Path to output CSV file. If this is a directory,
-                              'schema.csv' will be created in that directory.
-
-    Note:
-        If output_csv_path is a directory, the file will be saved as 'schema.csv'
-        in that directory.
-    """
-    # If output_csv_path is an existing directory, create schema.csv in it
     if os.path.exists(output_csv_path) and os.path.isdir(output_csv_path):
         output_csv_path = os.path.join(output_csv_path, 'schema.csv')
         print(f"Output path is a directory. Creating schema file: {output_csv_path}")
 
-    # Ensure parent directory exists
     output_dir = os.path.dirname(output_csv_path)
     if output_dir and not os.path.exists(output_dir):
         os.makedirs(output_dir, exist_ok=True)
@@ -365,10 +251,8 @@ def write_csv_schema(tables: List[Dict], output_csv_path: str) -> None:
         # Use QUOTE_MINIMAL to avoid quoting DECIMAL types with commas
         writer = csv.writer(csvfile, quoting=csv.QUOTE_MINIMAL)
 
-        # Write header
         writer.writerow(['table_name', 'column', 'type', 'constraint', 'length', 'format'])
 
-        # Write table rows
         for table in tables:
             for col in table['columns']:
                 table_name = table['table_name']
@@ -378,7 +262,6 @@ def write_csv_schema(tables: List[Dict], output_csv_path: str) -> None:
                 constraint = ''
                 format_val = ''
 
-                # Set constraint
                 if col.get('is_primary_key'):
                     constraint = 'pk'
                 elif col.get('foreign_key'):
@@ -396,21 +279,5 @@ def write_csv_schema(tables: List[Dict], output_csv_path: str) -> None:
 
 
 def ddl_string_to_csv(ddl_string: str, output_csv_path: str) -> None:
-    """
-    Convert DDL string directly to CSV schema format.
-
-    Args:
-        ddl_string (str): DDL string containing CREATE TABLE statements
-        output_csv_path (str): Path to output CSV file
-
-    Example:
-        >>> ddl = '''
-        ... CREATE TABLE users (
-        ...     id INT PRIMARY KEY,
-        ...     name VARCHAR(100)
-        ... );
-        ... '''
-        >>> ddl_string_to_csv(ddl, 'schema.csv')
-    """
     tables = parse_ddl_string(ddl_string)
     write_csv_schema(tables, output_csv_path)

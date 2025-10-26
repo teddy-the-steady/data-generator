@@ -1,9 +1,3 @@
-"""
-Test file for DML (SQL INSERT statement) generation functionality.
-
-This script tests the conversion of CSV data files to SQL INSERT statements.
-"""
-
 import os
 import shutil
 from pathlib import Path
@@ -25,11 +19,9 @@ def setup_test_environment():
     """Create test directories."""
     print("Setting up test environment...")
 
-    # Clean up existing test output
     if TEST_OUTPUT_DIR.exists():
         shutil.rmtree(TEST_OUTPUT_DIR)
 
-    # Create fresh directories
     TEST_OUTPUT_DIR.mkdir(exist_ok=True)
     TEST_DATA_DIR.mkdir(exist_ok=True)
     TEST_SQL_DIR.mkdir(exist_ok=True)
@@ -40,13 +32,6 @@ def setup_test_environment():
 
 
 def test_basic_dml_generation():
-    """
-    Test 1: Generate CSV data and convert to DML in one step.
-
-    This tests the generate_data_with_dml() function which:
-    1. Generates CSV data from schema
-    2. Automatically converts to SQL INSERT statements
-    """
     print("\n" + "="*70)
     print("TEST 1: Basic DML Generation (CSV + DML in one step)")
     print("="*70)
@@ -67,7 +52,6 @@ def test_basic_dml_generation():
     for dml_file in result['dml_files']:
         print(f"    - {Path(dml_file).name}")
 
-    # Display sample content from first DML file
     if result['dml_files']:
         sample_file = result['dml_files'][0]
         print(f"\n📄 Sample content from {Path(sample_file).name}:")
@@ -81,18 +65,10 @@ def test_basic_dml_generation():
 
 
 def test_convert_existing_csv():
-    """
-    Test 2: Convert existing CSV files to DML.
-
-    This tests the generate_dml_from_csv_folder() function which:
-    - Takes already generated CSV files
-    - Converts them to SQL INSERT statements
-    """
     print("\n" + "="*70)
     print("TEST 2: Convert Existing CSV Files to DML")
     print("="*70)
 
-    # First generate some CSV data
     print("\nStep 1: Generating CSV data...")
     tables = generate_data(
         schema_csv_path=str(EXAMPLE_CSV),
@@ -101,7 +77,6 @@ def test_convert_existing_csv():
     )
     print(f"✓ Generated {len(tables)} CSV file(s)")
 
-    # Now convert existing CSVs to DML
     print("\nStep 2: Converting CSV files to DML...")
     dml_files = generate_dml_from_csv_folder(
         csv_folder_path=str(TEST_DATA_DIR),
@@ -119,18 +94,10 @@ def test_convert_existing_csv():
 
 
 def test_different_batch_sizes():
-    """
-    Test 3: Test different batch sizes for INSERT statements.
-
-    This demonstrates how batch_size affects the output:
-    - Small batch (5 rows): More INSERT statements, easier to read
-    - Large batch (50 rows): Fewer INSERT statements, more efficient
-    """
     print("\n" + "="*70)
     print("TEST 3: Different Batch Sizes")
     print("="*70)
 
-    # Generate CSV data once
     print("\nGenerating CSV data with 50 rows per table...")
     tables = generate_data(
         schema_csv_path=str(EXAMPLE_CSV),
@@ -165,15 +132,6 @@ def test_different_batch_sizes():
 
 
 def verify_sql_syntax():
-    """
-    Test 4: Verify SQL syntax of generated DML files.
-
-    This checks:
-    - Proper quoting of string values
-    - NULL handling
-    - Numeric values without quotes
-    - Date/time formatting
-    """
     print("\n" + "="*70)
     print("TEST 4: SQL Syntax Verification")
     print("="*70)
@@ -195,12 +153,11 @@ def verify_sql_syntax():
         with open(dml_file, 'r', encoding='utf-8') as f:
             content = f.read()
 
-        # Basic syntax checks
         checks = {
             "Has INSERT INTO": "INSERT INTO" in content,
             "Has VALUES": "VALUES" in content,
             "Ends with semicolon": content.strip().endswith(';'),
-            "Has proper formatting": "    (" in content,  # Indented values
+            "Has proper formatting": "    (" in content,
         }
 
         for check_name, passed in checks.items():
@@ -217,10 +174,8 @@ def run_all_tests():
     print(f"Output directory: {TEST_OUTPUT_DIR}")
     print("="*70)
 
-    # Setup
     setup_test_environment()
 
-    # Run tests
     try:
         test_basic_dml_generation()
         test_convert_existing_csv()

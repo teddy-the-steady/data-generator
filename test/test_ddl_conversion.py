@@ -1,15 +1,8 @@
-"""
-Test script for DDL to CSV conversion.
-
-This script demonstrates and tests the DDL conversion functionality.
-"""
-
 from pg_data_generator.main import ddl_folder_to_csv, generate_data_from_ddl_folder
 import os
 
 
 def test_ddl_folder_to_csv():
-    """Test converting DDL folder to CSV schema."""
     print("=" * 60)
     print("TEST 1: Convert DDL folder to CSV")
     print("=" * 60)
@@ -22,7 +15,6 @@ def test_ddl_folder_to_csv():
         print("\n✅ Test 1 PASSED: DDL converted to CSV successfully")
         print("   Output: test_schema.csv")
 
-        # Show the generated CSV
         print("\nGenerated CSV content:")
         print("-" * 60)
         with open('./test_schema.csv', 'r') as f:
@@ -41,7 +33,6 @@ def test_generate_from_ddl():
     print("=" * 60)
 
     try:
-        # Create output directory
         output_dir = './test_output'
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
@@ -57,7 +48,6 @@ def test_generate_from_ddl():
         print(f"   Schema: {schema_path}")
         print(f"   Output directory: {output_dir}")
 
-        # Show first few rows of generated data
         for table in tables:
             csv_file = os.path.join(output_dir, f"{table}.csv")
             if os.path.exists(csv_file):

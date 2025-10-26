@@ -1,16 +1,9 @@
-"""
-Test script for DDL to DML conversion functionality.
-
-This script tests the new ddl_to_dml and generate_dml_from_ddl_folder functions.
-"""
-
 from pg_data_generator.main import generate_dml_from_ddl_folder, ddl_to_dml
 import os
 import shutil
 
 
 def test_ddl_folder_to_dml():
-    """Test converting a folder of DDL files to DML INSERT statements."""
     print("=" * 70)
     print("TEST 1: Converting DDL folder to DML INSERT statements")
     print("=" * 70)
@@ -18,7 +11,6 @@ def test_ddl_folder_to_dml():
     ddl_folder = './example_ddl'
     output_dml_dir = './test_output_dml'
 
-    # Clean up output directory if it exists
     if os.path.exists(output_dml_dir):
         shutil.rmtree(output_dml_dir)
 
@@ -71,7 +63,6 @@ def test_single_ddl_to_dml():
     ddl_file = './example_ddl/example.sql'
     output_dml_dir = './test_output_dml_single'
 
-    # Clean up output directory if it exists
     if os.path.exists(output_dml_dir):
         shutil.rmtree(output_dml_dir)
 
