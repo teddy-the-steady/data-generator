@@ -1,6 +1,16 @@
 import csv
 import os
+import re
 from typing import List, Dict, Optional
+
+
+def _to_snake_case(name: str) -> str:
+    """Convert PascalCase or camelCase to snake_case."""
+    # Insert an underscore before any uppercase letter that follows a lowercase letter or digit
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    # Insert an underscore before any uppercase letter that follows a lowercase letter, digit, or uppercase letter
+    s2 = re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1)
+    return s2.lower()
 
 
 def csv_to_dml(csv_file_path: str, table_name: str, output_sql_path: str,
@@ -59,11 +69,12 @@ def csv_folder_to_dml(csv_folder_path: str, output_folder_path: str,
     for csv_file in csv_files:
         table_name = os.path.splitext(csv_file)[0]
 
-        import re
         table_name = re.sub(r'\d+$', '', table_name)
 
         csv_path = os.path.join(csv_folder_path, csv_file)
-        sql_file = f"{os.path.splitext(csv_file)[0]}_insert.sql"
+        # Convert table name to snake_case for SQL filename
+        snake_case_name = _to_snake_case(os.path.splitext(csv_file)[0])
+        sql_file = f"{snake_case_name}.sql"
         sql_path = os.path.join(output_folder_path, sql_file)
 
         print(f"  - Converting {csv_file} -> {sql_file}")
