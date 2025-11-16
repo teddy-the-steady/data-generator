@@ -9,6 +9,7 @@ from pg_data_generator.cases.DateTime import DateTime
 from pg_data_generator.cases.Code import Code
 from pg_data_generator.cases.Email import Email
 from pg_data_generator.cases.Varchar import Varchar
+from pg_data_generator.cases.Boolean import Boolean
 from pg_data_generator.cases.Etc import Etc
 
 from pg_data_generator.core.Csv import Csv
@@ -107,6 +108,10 @@ class DataGenerator():
 
         if DateTime.is_date_or_datetime(column_metadata['type']):
             result = DateTime(count, column_metadata)
+            return result.make_column()
+
+        if Boolean.is_boolean(column_metadata['type']):
+            result = Boolean(count, column_metadata)
             return result.make_column()
 
         if PhoneNumber.is_phone_number(column_metadata['column']):
